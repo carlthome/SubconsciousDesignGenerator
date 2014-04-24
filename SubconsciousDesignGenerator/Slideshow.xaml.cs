@@ -67,25 +67,25 @@ namespace SubconsciousDesignGenerator
         void newSession()
         {
             // Display slides and collect reaction data.
-            var wins = new Dictionary<ImageSource, int>();
+            var hits = new Dictionary<ImageSource, long>();
             var q = new Queue<ImageSource>(images);
-            images.ForEach(i => wins.Add(i, 0));
-            long hits1 = 0, hits2 = 0;
+            images.ForEach(i => hits.Add(i, 0));
+            long h1 = 0, h2 = 0;
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 Instructions.Visibility = Visibility.Hidden;
                 Slide.Visibility = Visibility.Visible;
-                Image1.MouseEnter += (Object s, MouseEventArgs e) => { hits1 = (hits1 == 0) ? 100 : hits1++; };
-                Image2.MouseEnter += (Object s, MouseEventArgs e) => { hits1 = (hits2 == 0) ? 100 : hits2++; };
+                Image1.MouseEnter += (Object s, MouseEventArgs e) => { h1 = (h1 == 0) ? 100 : h1++; };
+                Image2.MouseEnter += (Object s, MouseEventArgs e) => { h1 = (h2 == 0) ? 100 : h2++; };
             })).Wait();
 
             while (q.Count >= 2)
             {
                 // Switch slide.
+                h1 = 0;
+                h2 = 0;
                 ImageSource is1 = q.Dequeue();
                 ImageSource is2 = q.Dequeue();
-                hits1 = 0;
-                hits2 = 0;
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
                     Image1.Source = is1;
@@ -95,22 +95,18 @@ namespace SubconsciousDesignGenerator
                 // Measure hits for a while.
                 session.Wait(SLIDE_DURATION);
 
+                // Update gaze hit data.
+                hits[is1] += h1;
+                hits[is2] += h2;
+
                 // Determine winning image.
-                if (hits1 > hits2)
-                {
-                    ++wins[is1];
-                    q.Enqueue(is1);
-                }
-                else
-                {
-                    ++wins[is2];
-                    q.Enqueue(is2);
-                }
+                if (h1 > h2) q.Enqueue(is1);
+                else q.Enqueue(is2);
             }
 
             // Pick the images that interested the user most.
             var MAX_LAYERS = 10;
-            List<KeyValuePair<ImageSource, int>> layers = wins.OrderByDescending(x => x.Value).Take(MAX_LAYERS).ToList();
+            List<KeyValuePair<ImageSource, long>> layers = hits.OrderByDescending(x => x.Value).Take(MAX_LAYERS).ToList();
 
             // Construct composite from the reaction data.
             Dispatcher.BeginInvoke(new Action(() =>

@@ -19,11 +19,11 @@ namespace SubconsciousDesignGenerator
     /// </summary>
     public partial class Composite : Window
     {
-        List<KeyValuePair<ImageSource, int>> layers;
-        public Composite(List<KeyValuePair<ImageSource, int>> layers)
+        List<KeyValuePair<ImageSource, long>> layers;
+        public Composite(List<KeyValuePair<ImageSource, long>> l)
         {
             InitializeComponent();
-            this.layers = layers;
+            layers = l;
         }
 
         void onLoaded(object s, RoutedEventArgs e)
