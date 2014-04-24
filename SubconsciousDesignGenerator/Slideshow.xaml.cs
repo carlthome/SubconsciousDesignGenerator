@@ -50,6 +50,7 @@ namespace SubconsciousDesignGenerator
                 Task t = new Task(() => { iet.RunEventLoop(); });
                 t.Start();
                 iet.Connect();
+                iet.StartTracking();
                 Instructions.Text = "Tryck mellanslag för att börja.";
             }
             catch (EyeTrackerException e)
@@ -66,7 +67,6 @@ namespace SubconsciousDesignGenerator
         void newSession()
         {
             // Display slides and collect reaction data.
-            iet.StartTracking();
             var wins = new Dictionary<ImageSource, int>();
             var q = new Queue<ImageSource>(images);
             images.ForEach(i => wins.Add(i, 0));
@@ -75,9 +75,10 @@ namespace SubconsciousDesignGenerator
             {
                 Instructions.Visibility = Visibility.Hidden;
                 Slide.Visibility = Visibility.Visible;
-                Image1.MouseEnter += (Object s, MouseEventArgs e) => { ++hits1;/* Background = Brushes.Gray; */};
-                Image2.MouseEnter += (Object s, MouseEventArgs e) => { ++hits2;/* Background = Brushes.White; */};
+                Image1.MouseEnter += (Object s, MouseEventArgs e) => { hits1 = (hits1 == 0) ? 100 : hits1++; };
+                Image2.MouseEnter += (Object s, MouseEventArgs e) => { hits1 = (hits2 == 0) ? 100 : hits2++; };
             })).Wait();
+
             while (q.Count >= 2)
             {
                 // Switch slide.
@@ -106,7 +107,6 @@ namespace SubconsciousDesignGenerator
                     q.Enqueue(is2);
                 }
             }
-            iet.StopTracking();
 
             // Pick the images that interested the user most.
             var MAX_LAYERS = 10;
