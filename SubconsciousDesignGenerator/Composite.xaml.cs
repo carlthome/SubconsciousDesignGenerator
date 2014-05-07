@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace SubconsciousDesignGenerator
 {
@@ -19,39 +12,59 @@ namespace SubconsciousDesignGenerator
     /// </summary>
     public partial class Composite : Window
     {
-        List<KeyValuePair<ImageSource, long>> layers;
-        public Composite(List<KeyValuePair<ImageSource, long>> l)
+        Random r;
+        public Composite()
         {
             InitializeComponent();
-            layers = l;
+            r = new Random();
         }
 
-        void onLoaded(object s, RoutedEventArgs e)
+        public void CreateCompositeImage(MeasurementData md)
         {
-            Random rng = new Random();
-            var r = Height / 6;
-            var c = Width / 6;
-
-            // Create an image layout.
-            int l = layers.Count;
-            int z = 0;
-            foreach (var layer in layers)
+            var z = 1;
+            foreach (var hc in md.HitCounts)
             {
-                var i = new Image();
-                i.Source = layer.Key;
-                i.Height = l * r;
-                i.Width = l * c;
-                Canvas.SetZIndex(i, z++);
-                Canvas.SetLeft(i, (rng.Next(12) - 6) * r);
-                Canvas.SetTop(i, (rng.Next(12) - 6) * c);
-                Layout.Children.Add(i);
-                --l;
-            }
+                // Only keep images in the composition with a normalized hit count larger or equal to the average.
+                if (hc.HitCountNormalized < md.AverageHitCountNormalized) continue;
 
-            //TODO Render window as png.
-            //TODO Send png to a wi-fi printer.
+                // Create new image control.
+                var i = new Image();
+                i.Source = hc.ImageSource;
+                Canvas.SetZIndex(i, ++z);
+
+                // Scale image.
+                i.Height = (md.AverageHitCountNormalized != 0) ? hc.HitCountNormalized * Height / md.AverageHitCountNormalized : Height/md.HitCounts.Count;
+                i.Width = (md.AverageHitCountNormalized != 0) ? hc.HitCountNormalized * Width / md.AverageHitCountNormalized : Width/md.HitCounts.Count;
+
+                // Position image on the canvas.
+                int w = (int)(Width + i.Width / 2);
+                int h = (int)(Height + i.Height / 2);
+                Canvas.SetLeft(i, (-w + r.Next(2 * w + 1)));
+                Canvas.SetTop(i, (-h + r.Next(2 * h + 1)));
+
+                // Rotate image randomly.
+                i.RenderTransform = new RotateTransform(r.Next(360));
+
+                Layout.Children.Add(i);
+            }
         }
 
+        public void SaveCompositeImage()
+        {
+            if (!Directory.Exists("Output")) Directory.CreateDirectory("Output");
+            string filename = "Output/" + System.DateTime.Now.ToString("yyyyMMddHHmmss") + ".png";
+            RenderTargetBitmap renderBitmap = new RenderTargetBitmap((int)Layout.Width, (int)Layout.Height, 96d, 96d, PixelFormats.Pbgra32);
+            Layout.Measure(new Size((int)Layout.Width, (int)Layout.Height));
+            Layout.Arrange(new Rect(new Size((int)Layout.Width, (int)Layout.Height)));
+            renderBitmap.Render(Layout);
+            PngBitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+            using (FileStream fs = File.Create(filename)) encoder.Save(fs);
+        }
 
+        public void PrintCompositeImage()
+        {
+            MessageBox.Show("Utskriftsfunktionen saknas.");
+        }
     }
 }

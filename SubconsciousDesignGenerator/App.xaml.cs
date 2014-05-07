@@ -6,12 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace CompositeImageGenerator
+namespace SubconsciousDesignGenerator
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
+        public static readonly EyeTrackingEngine eyeTracker = new EyeTrackingEngine();
     }
 }

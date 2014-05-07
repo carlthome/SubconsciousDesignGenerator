@@ -1,0 +1,41 @@
+﻿<Window x:Class="SubconsciousDesignGenerator.DialogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        WindowState="Maximized"
+        Topmost="True"
+        Cursor="None"
+        KeyDown="onKeyDown"
+        Name="Dialog">
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Dialog" Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Default" Style="{StaticResource LargeText}" Name="Instructions" />
+        <Grid HorizontalAlignment="Center" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Margin="20">
+                <Rectangle Fill="Lime" RadiusX="20" RadiusY="20" Width="{Binding Height, RelativeSource={RelativeSource Self}}" Height="{Binding ActualHeight, ElementName=Instructions}"/>
+                <TextBlock Style="{StaticResource MediumText}" Name="ConfirmText" Text="Default" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Margin="20" >
+                <Rectangle Fill="Red" Width="{Binding Height, RelativeSource={RelativeSource Self}}" Height="{Binding ActualHeight, ElementName=Instructions}" RadiusX="20" RadiusY="20" />
+                <TextBlock Style="{StaticResource MediumText}" Name="CancelText" Text="Default" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
