@@ -12,7 +12,11 @@
         <EventTrigger RoutedEvent="Window.Loaded">
             <BeginStoryboard>
                 <Storyboard>
-                    <DoubleAnimation Storyboard.TargetName="Dialog" Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1"/>
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1">
+                        <DoubleAnimation.EasingFunction>
+                            <ExponentialEase/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
                 </Storyboard>
             </BeginStoryboard>
         </EventTrigger>
@@ -22,7 +26,7 @@
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Default" Style="{StaticResource LargeText}" Name="Instructions" />
+        <TextBlock Margin="20" Padding="5" Grid.Row="0" Text="Default" Style="{StaticResource LargeText}" Name="Instructions" Foreground="White" Background="Black" />
         <Grid HorizontalAlignment="Center" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -30,11 +34,11 @@
             </Grid.ColumnDefinitions>
             <StackPanel Margin="20">
                 <Rectangle Fill="Lime" RadiusX="20" RadiusY="20" Width="{Binding Height, RelativeSource={RelativeSource Self}}" Height="{Binding ActualHeight, ElementName=Instructions}"/>
-                <TextBlock Style="{StaticResource MediumText}" Name="ConfirmText" Text="Default" />
+                <TextBlock Foreground="Lime" Style="{StaticResource MediumText}" Name="ConfirmText" Text="Default" />
             </StackPanel>
             <StackPanel Grid.Column="1" Margin="20" >
                 <Rectangle Fill="Red" Width="{Binding Height, RelativeSource={RelativeSource Self}}" Height="{Binding ActualHeight, ElementName=Instructions}" RadiusX="20" RadiusY="20" />
-                <TextBlock Style="{StaticResource MediumText}" Name="CancelText" Text="Default" />
+                <TextBlock Foreground="Red" Style="{StaticResource MediumText}" Name="CancelText" Text="Default" />
             </StackPanel>
         </Grid>
     </Grid>

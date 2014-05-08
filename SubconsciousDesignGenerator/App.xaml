@@ -13,12 +13,10 @@
             <Setter Property="FontSize" Value="36"/>
             <Setter Property="FontFamily" Value="Times New Roman" />
             <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Foreground" Value="Gray"/>
         </Style>
         <Style TargetType="TextBlock" x:Key="SmallText">
             <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontFamily" Value="Times New Roman" />
-            <Setter Property="Foreground" Value="LightGray"/>
         </Style>
     </Application.Resources>
 </Application>
