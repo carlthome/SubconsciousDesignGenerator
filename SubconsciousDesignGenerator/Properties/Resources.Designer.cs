@@ -59,5 +59,15 @@ namespace SubconsciousDesignGenerator.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] AntiqueOliveStd_Bold {
+            get {
+                object obj = ResourceManager.GetObject("AntiqueOliveStd_Bold", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

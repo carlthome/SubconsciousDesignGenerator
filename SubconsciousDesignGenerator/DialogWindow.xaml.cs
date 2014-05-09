@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 namespace SubconsciousDesignGenerator
 {
     /// <summary>
-    /// Interaction logic for ConfirmBox.xaml
+    /// Interaction logic for DialogWindow.xaml
     /// </summary>
     public partial class DialogWindow : Window
     {

@@ -5,18 +5,16 @@
     <Application.Resources>
         <Style TargetType="TextBlock" x:Key="LargeText">
             <Setter Property="FontSize" Value="72" />
-            <Setter Property="FontFamily" Value="Times New Roman" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontFamily" Value="/SubconsciousDesignGenerator;component/Resources/#Antique Olive Std" />
         </Style>
         <Style TargetType="TextBlock" x:Key="MediumText">
             <Setter Property="FontSize" Value="36"/>
-            <Setter Property="FontFamily" Value="Times New Roman" />
-            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontFamily" Value="/SubconsciousDesignGenerator;component/Resources/#Antique Olive Std" />
         </Style>
         <Style TargetType="TextBlock" x:Key="SmallText">
             <Setter Property="FontSize" Value="18"/>
-            <Setter Property="FontFamily" Value="Times New Roman" />
+            <Setter Property="FontFamily" Value="/SubconsciousDesignGenerator;component/Resources/#Antique Olive Std" />
         </Style>
     </Application.Resources>
 </Application>

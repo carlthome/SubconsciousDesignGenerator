@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Media;
 
@@ -14,28 +16,29 @@ namespace SubconsciousDesignGenerator
         }
 
         public int AverageHitCount { get; set; }
-        public double AverageHitCountNormalized { get; set; }
+        public double EuclideanNorm { get; set; }
         public List<Measurement> HitCounts { get; set; }
 
         public MeasurementData(Dictionary<ImageSource, int> hitCounts)
         {
-            var arr = hitCounts.OrderByDescending(x => x.Value).ToArray();
-            var max = arr[0].Value;
-            var min = arr[arr.Length - 1].Value;
-            var range = max - min;
+            var kvps = hitCounts.OrderByDescending(kvp => kvp.Value).ToList();
+            var max = kvps.Max(kvp => kvp.Value);
+            var min = kvps.Min(kvp => kvp.Value);
+            var count = kvps.Count;
+            var total = (max != 0) ? kvps.Sum(kvp => kvp.Value) : 1;
 
-            foreach (var layer in arr) AverageHitCount += layer.Value / arr.Length;
-            AverageHitCountNormalized = (range != 0) ? (AverageHitCount - min) / (double)range : 0;
-
+            AverageHitCount = total / count;
             HitCounts = new List<Measurement>();
-            foreach (var m in hitCounts.OrderByDescending(x => x.Value))
-            {
-                HitCounts.Add(new Measurement { 
-                    ImageSource = m.Key,
-                    HitCount = m.Value, 
-                    HitCountNormalized = (range != 0) ? (m.Value - min) / (double)range : 0
-                });
-            }
+            kvps.ForEach(kvp => HitCounts.Add(new Measurement { 
+                ImageSource = kvp.Key, 
+                HitCount = kvp.Value,  
+                HitCountNormalized = kvp.Value / (double) total
+            }));
+
+            EuclideanNorm = Math.Sqrt(HitCounts.Sum(m => Math.Pow(m.HitCount / total, 2)));
+
+            Debug.Assert(max >= min);
+            Debug.Assert(0 <= EuclideanNorm && EuclideanNorm <= 1);
         }
     }
 }

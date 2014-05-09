@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -47,7 +48,10 @@ namespace SubconsciousDesignGenerator
                     images.Add((ImageSource)bi);
                 }
 
-                slideshow = Task.Factory.StartNew(runSlideshow);
+                Random r = new Random();
+                images = images.OrderBy(_ => r.Next()).Take(10).ToList(); //TODO Remove.
+
+                MessageBox.Show("Börja med att manuellt maximera bildspel- och kompositions-fönstrena på sina respektive skärmar.");
             }
             else
             {
@@ -66,7 +70,7 @@ namespace SubconsciousDesignGenerator
                 var b = false;
                 while (!b)
                 {
-                    var startDialog = new DialogWindow("Starta bildspelet?", "Ja", "Nej");
+                    var startDialog = new DialogWindow("STARTA BILDSPEL & AVLÄSNING?", "JA", "NEJ");
                     startDialog.ShowDialog();
                     b = startDialog.DialogResult.Value;
                 }
@@ -120,7 +124,7 @@ namespace SubconsciousDesignGenerator
                 composite.SaveCompositeImage();
 
                 // Ask user if they want to print the composite image.
-                var printDialog = new DialogWindow("Ögonrörelsemätning färdig. Skicka resultatet till skrivaren?", "Ja, skriv ut resultatet.", "Nej, visa bara mätdata.");
+                var printDialog = new DialogWindow("AVLÄSNINGEN KLAR.\nVILL DU SKRIVA UT DITT RESULTAT?", "JA", "NEJ");
                 printDialog.ShowDialog();
                 if (printDialog.DialogResult.Value) composite.PrintCompositeImage();
 
@@ -129,7 +133,7 @@ namespace SubconsciousDesignGenerator
                 statisticsWindow.Show();
 
                 // Enable new session after some time has passed.
-                Task.Delay(10000).ContinueWith(_ => Dispatcher.Invoke(() =>
+                Task.Delay(15000).ContinueWith(_ => Dispatcher.Invoke(() =>
                 {
                     statisticsWindow.Close();
                     slideshow = Task.Factory.StartNew(runSlideshow);
@@ -139,7 +143,7 @@ namespace SubconsciousDesignGenerator
 
         bool uniqueHit(Point point, List<Point> visited)
         {
-            const double MINIMUM_DISTANCE = 100;
+            const double MINIMUM_DISTANCE = 50;
             return visited.TrueForAll(p => distance(point, p) <= MINIMUM_DISTANCE);
         }
 
@@ -154,6 +158,19 @@ namespace SubconsciousDesignGenerator
             else if (uniqueHit(p, points)) imageHit += 2;         // Medium bonus if the gaze point is new.
             else ++imageHit;                                      // One point if the user is simply staring at the image.
             points.Add(p);
+        }
+
+        void onMaximized(object s, EventArgs e)
+        {
+            WindowStyle = WindowStyle.None;
+            WindowState = WindowState.Maximized;
+            ResizeMode = ResizeMode.NoResize;
+            slideshow = Task.Factory.StartNew(runSlideshow);
+        }
+
+        void onNextSlide(object s, DataTransferEventArgs e)
+        {
+
         }
     }
 }

@@ -13,9 +13,9 @@
         <EventTrigger RoutedEvent="Window.Loaded">
             <BeginStoryboard>
                 <Storyboard>
-                    <DoubleAnimation Storyboard.TargetProperty="Effect.Radius" From="100" To="0" Duration="0:0:3">
+                    <DoubleAnimation Storyboard.TargetProperty="Effect.Radius" From="50" To="0" Duration="0:0:1">
                         <DoubleAnimation.EasingFunction>
-                            <ExponentialEase/>
+                            <QuadraticEase/>
                         </DoubleAnimation.EasingFunction>
                     </DoubleAnimation>
                 </Storyboard>
@@ -27,18 +27,18 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="4*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Ögonmätningsdata" Style="{StaticResource LargeText}"/>
+        <TextBlock Text="Ögonmätningsdata" Style="{StaticResource LargeText}" HorizontalAlignment="Center"/>
         <ItemsControl VerticalAlignment="Top" HorizontalAlignment="Center" ItemsSource="{Binding HitCounts}" Grid.Row="1">
             <ItemsControl.Template>
                 <ControlTemplate>
-                    <WrapPanel Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" IsItemsHost="True" Orientation="Vertical"/>
+                    <WrapPanel Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" IsItemsHost="True" Orientation="Horizontal"/>
                 </ControlTemplate>
             </ItemsControl.Template>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <DockPanel Margin="20">
                         <Image DockPanel.Dock="Top" Source="{Binding ImageSource}" Width="48" />
-                        <TextBlock Text="{Binding HitCount}" HorizontalAlignment="Center" DockPanel.Dock="Bottom" Style="{StaticResource SmallText}" TextWrapping="WrapWithOverflow" />
+                        <TextBlock Text="{Binding HitCount}" HorizontalAlignment="Center" DockPanel.Dock="Bottom" Style="{StaticResource SmallText}" />
                     </DockPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
