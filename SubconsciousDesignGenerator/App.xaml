@@ -1,20 +1,53 @@
 ﻿<Application x:Class="SubconsciousDesignGenerator.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="Slideshow.xaml">
+             StartupUri="SlideshowWindow.xaml">
     <Application.Resources>
+        <EventTrigger x:Key="FadeInWindow" RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard Name="FadeInWindowStoryboard">
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1">
+                        <DoubleAnimation.EasingFunction>
+                            <ExponentialEase/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
         <Style TargetType="TextBlock" x:Key="LargeText">
             <Setter Property="FontSize" Value="72" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontFamily" Value="/SubconsciousDesignGenerator;component/Resources/#Antique Olive Std" />
+            <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
         <Style TargetType="TextBlock" x:Key="MediumText">
             <Setter Property="FontSize" Value="36"/>
             <Setter Property="FontFamily" Value="/SubconsciousDesignGenerator;component/Resources/#Antique Olive Std" />
+            <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
         <Style TargetType="TextBlock" x:Key="SmallText">
             <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontFamily" Value="/SubconsciousDesignGenerator;component/Resources/#Antique Olive Std" />
+            <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
+        <StackPanel x:Key="DataTable" x:Shared="False">
+            <TextBlock HorizontalAlignment="Center" Text="Ögonmätningsdata" Style="{StaticResource LargeText}"/>
+            <TextBlock HorizontalAlignment="Center" Text="{Binding EuclideanNorm, StringFormat={}Focus: {0:P0}}" Style="{StaticResource SmallText}"/>
+            <ItemsControl VerticalAlignment="Top" HorizontalAlignment="Center" ItemsSource="{Binding HitCounts}">
+                <ItemsControl.Template>
+                    <ControlTemplate>
+                        <WrapPanel Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" IsItemsHost="True" Orientation="Horizontal"/>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel Margin="20">
+                            <Image DockPanel.Dock="Top" Source="{Binding ImageSource}" Width="48" />
+                            <TextBlock Text="{Binding HitCount}" HorizontalAlignment="Center" DockPanel.Dock="Bottom" Style="{StaticResource SmallText}" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
     </Application.Resources>
 </Application>

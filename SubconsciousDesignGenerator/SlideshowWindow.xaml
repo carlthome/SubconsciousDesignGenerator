@@ -1,17 +1,17 @@
-﻿<Window x:Class="SubconsciousDesignGenerator.Slideshow"
+﻿<Window x:Class="SubconsciousDesignGenerator.SlideshowWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Slideshow" 
         Cursor="None"
-        Topmost="True"
         Loaded="onLoaded"
-        StateChanged="onMaximized">
+        WindowState="Maximized"
+        WindowStyle="None">
     <Grid Margin="20" Name="Slide">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Image Margin="20" Name="Image1" Height="Auto" Width="Auto" Grid.Column="0">
+        <Image Margin="20" Name="Image1" Height="Auto" Width="Auto" Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor">
             <Image.Triggers>
                 <EventTrigger RoutedEvent="Image.MouseMove">
                     <BeginStoryboard>
@@ -23,7 +23,7 @@
                 </EventTrigger>
             </Image.Triggers>
         </Image>
-        <Image Margin="20" Name="Image2" Height="Auto" Width="Auto" Grid.Column="1">
+        <Image Margin="20" Name="Image2" Height="Auto" Width="Auto" Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor">
             <Image.Triggers>
                 <EventTrigger RoutedEvent="Image.MouseMove">
                     <BeginStoryboard>

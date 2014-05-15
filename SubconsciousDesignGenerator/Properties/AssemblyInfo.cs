@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CompositeImageGenerator")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("SubconsciousDesignGenerator")]
+[assembly: AssemblyDescription("A composite image generator using eye tracking. Created by Carl Thomé and Frida Everling.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CompositeImageGenerator")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyProduct("SubconsciousDesignGenerator")]
+[assembly: AssemblyCopyright("CC BY-SA 4.0")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

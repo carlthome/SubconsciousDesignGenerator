@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace SubconsciousDesignGenerator
 {
     /// <summary>
-    /// Interaction logic for Statistics.xaml
+    /// Interaction logic for StatisticsWindow.xaml
     /// </summary>
-    public partial class Statistics : Window
+    public partial class StatisticsWindow : Window
     {
-        public Statistics(MeasurementData md)
+        public StatisticsWindow(MeasurementData md)
         {
             InitializeComponent();
             DataContext = md;

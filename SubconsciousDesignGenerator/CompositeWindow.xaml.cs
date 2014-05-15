@@ -6,16 +6,17 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Printing;
+using System.Windows.Media.Animation;
 
 namespace SubconsciousDesignGenerator
 {
     /// <summary>
-    /// Interaction logic for Composite.xaml
+    /// Interaction logic for CompositeWindow.xaml
     /// </summary>
-    public partial class Composite : Window
+    public partial class CompositeWindow : Window
     {
         Random r;
-        public Composite()
+        public CompositeWindow()
         {
             InitializeComponent();
             r = new Random();
@@ -23,6 +24,8 @@ namespace SubconsciousDesignGenerator
 
         public void CreateCompositeImage(MeasurementData md)
         {
+            DataContext = md;
+
             // If the user looked at a few images a lot more than the others, keep only those few images.
             var layers = md.HitCounts.Take((int)Math.Round(md.HitCounts.Count * (1 - md.EuclideanNorm)));
 
@@ -35,26 +38,24 @@ namespace SubconsciousDesignGenerator
 
                 // Create new image control.
                 var i = new Image();
+                RenderOptions.SetBitmapScalingMode(i, BitmapScalingMode.Fant);
                 i.Source = hc.ImageSource;
                 Canvas.SetZIndex(i, ++z);
 
                 // Scale image.
-                i.Height = hc.HitCountNormalized * Height;
-                i.Width = hc.HitCountNormalized * Width;
+                i.Height = Math.Sqrt(md.EuclideanNorm * hc.HitCountNormalized) * CompositeImage.Height;
+                i.Width = Math.Sqrt(md.EuclideanNorm * hc.HitCountNormalized) * CompositeImage.Width;
 
                 // Position image on the canvas.
-                int w = (int)(Width - i.Width / 2);
-                int h = (int)(Height - i.Height / 2);
-                Canvas.SetLeft(i, (-w + r.Next(2 * w + 1)));
-                Canvas.SetTop(i, (-h + r.Next(2 * h + 1)));
+                Func<double, double> random = (double x) => r.NextDouble() * 2 * x - x; // Random number between -x and x.
+                Canvas.SetLeft(i, random(Width*0.5) - i.Width / 2);
+                Canvas.SetTop(i, random(Height*0.5) - i.Height / 2);
 
                 // Rotate image randomly.
                 i.RenderTransform = new RotateTransform(r.Next(360));
 
                 Layout.Children.Add(i);
             }
-
-            DataContext = md;
         }
 
         public void SaveCompositeImage()
@@ -63,9 +64,8 @@ namespace SubconsciousDesignGenerator
             string f = "Output/" + System.DateTime.Now.ToString("yyyyMMddHHmmss") + ".png";
 
             Size size = new Size(CompositeImage.Width, CompositeImage.Height);
-            //CompositeImage.Measure(size);
-            //CompositeImage.Arrange(new Rect(size));
-
+            CompositeImage.UpdateLayout();
+            CompositeImage.Arrange(new Rect(size));
             RenderTargetBitmap r = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
             r.Render(CompositeImage);
 
@@ -79,17 +79,22 @@ namespace SubconsciousDesignGenerator
 
         public void PrintCompositeImage()
         {
-            PrintQueue printer = LocalPrintServer.GetDefaultPrintQueue();
             var pd = new PrintDialog();
-            pd.PrintQueue = printer;
-            pd.PrintVisual(Layout, "");
+            pd.PrintQueue = LocalPrintServer.GetDefaultPrintQueue();
+            pd.PrintVisual(CompositeImage, "");
         }
 
-        void onMaximized(object s, EventArgs e)
+        void onLoaded(object s, EventArgs e)
         {
-            WindowStyle = WindowStyle.None;
             WindowState = WindowState.Maximized;
-            ResizeMode = ResizeMode.NoResize;
+        }
+
+        void onDataContextChanged(object s, DependencyPropertyChangedEventArgs e)
+        {
+            Layout.Children.Clear();
+            var sb = (FindResource("BlinkAnimation") as Storyboard);
+            Storyboard.SetTarget(sb, this);
+            sb.Begin();
         }
     }
 }

@@ -9,17 +9,7 @@
         KeyDown="onKeyDown"
         Name="Dialog">
     <Window.Triggers>
-        <EventTrigger RoutedEvent="Window.Loaded">
-            <BeginStoryboard>
-                <Storyboard>
-                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1">
-                        <DoubleAnimation.EasingFunction>
-                            <ExponentialEase/>
-                        </DoubleAnimation.EasingFunction>
-                    </DoubleAnimation>
-                </Storyboard>
-            </BeginStoryboard>
-        </EventTrigger>
+        <StaticResource ResourceKey="FadeInWindow" />
     </Window.Triggers>
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
         <Grid.RowDefinitions>
@@ -32,11 +22,11 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <StackPanel VerticalAlignment="Bottom">
+            <StackPanel Name="CancelInstructions" VerticalAlignment="Bottom">
                 <Rectangle Fill="Red" Width="100" Height="100" RadiusX="20" RadiusY="20" />
                 <TextBlock Foreground="Red" Style="{StaticResource MediumText}" Name="CancelText" Text="NEJ" HorizontalAlignment="Center" />
             </StackPanel>
-            <StackPanel Grid.Column="1" Margin="20,0,0,0">
+            <StackPanel Name="ConfirmInstructions" Grid.Column="1" Margin="20,0,0,0">
                 <Rectangle Fill="Lime" RadiusX="20" RadiusY="20" Width="100" Height="200"/>
                 <TextBlock Foreground="Lime" Style="{StaticResource MediumText}" Name="ConfirmText" Text="JA" HorizontalAlignment="Center" />
             </StackPanel>

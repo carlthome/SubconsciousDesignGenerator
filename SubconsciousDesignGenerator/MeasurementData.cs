@@ -27,15 +27,14 @@ namespace SubconsciousDesignGenerator
             var count = kvps.Count;
             var total = (max != 0) ? kvps.Sum(kvp => kvp.Value) : 1;
 
-            AverageHitCount = total / count;
+            AverageHitCount = (int)Math.Round((double)total / (double)count);
             HitCounts = new List<Measurement>();
             kvps.ForEach(kvp => HitCounts.Add(new Measurement { 
                 ImageSource = kvp.Key, 
                 HitCount = kvp.Value,  
                 HitCountNormalized = kvp.Value / (double) total
             }));
-
-            EuclideanNorm = Math.Sqrt(HitCounts.Sum(m => Math.Pow(m.HitCount / total, 2)));
+            EuclideanNorm = Math.Sqrt(HitCounts.Sum(m => Math.Pow(m.HitCount / (double) total, 2)));
 
             Debug.Assert(max >= min);
             Debug.Assert(0 <= EuclideanNorm && EuclideanNorm <= 1);

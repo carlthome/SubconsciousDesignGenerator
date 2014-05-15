@@ -44,7 +44,10 @@ namespace SubconsciousDesignGenerator
         void onGazeData(object s, GazeDataEventArgs e)
         {
             //TODO Add support for one-eyed users (pirate-mode, yeaarrrgh!).
-            if (e.GazeData.TrackingStatus == TrackingStatus.NoEyesTracked) return;
+            if (e.GazeData.TrackingStatus == TrackingStatus.NoEyesTracked)
+            {
+                raiseHeadMoved(-1);
+            }
             else if (e.GazeData.TrackingStatus == TrackingStatus.BothEyesTracked)
             {
                 // Calculate the user's head's distance from the eye tracker camera.
@@ -64,19 +67,13 @@ namespace SubconsciousDesignGenerator
         void raiseHeadMoved(double d)
         {
             var handler = HeadMovement;
-            if (handler != null)
-            {
-                handler(this, new HeadMovementEventArgs(d));
-            }
+            if (handler != null) handler(this, new HeadMovementEventArgs(d));
         }
 
         void raiseGazePoint(int x, int y)
         {
             var handler = GazePoint;
-            if (handler != null)
-            {
-                handler(this, new GazePointEventArgs(x, y));
-            }
+            if (handler != null) handler(this, new GazePointEventArgs(x, y));
         }
     }
 

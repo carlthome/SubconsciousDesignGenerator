@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -14,44 +16,50 @@ using System.Windows.Threading;
 namespace SubconsciousDesignGenerator
 {
     /// <summary>
-    /// Interaction logic for Slideshow.xaml
+    /// Interaction logic for SlideshowWindow.xaml
     /// </summary>
-    public partial class Slideshow : Window
+    public partial class SlideshowWindow : Window
     {
         Task slideshow;
-        Composite composite;
+        CompositeWindow composite;
         List<ImageSource> images;
         const int SLIDE_DURATION = 800;
 
-        public Slideshow()
+        public SlideshowWindow()
         {
             InitializeComponent();
         }
 
         void onLoaded(object s, RoutedEventArgs e)
         {
+            // Require two screens.
+            Debug.Assert(System.Windows.Forms.SystemInformation.MonitorCount > 1);
+
             if (App.eyeTracker.connected)
             {
-                (composite = new Composite()).Show();
+                // Open composite window maximized on second screen.
+                composite = new CompositeWindow();
+                System.Drawing.Rectangle wa = System.Windows.Forms.Screen.AllScreens[1].WorkingArea;
+                composite.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                composite.Left = wa.Left;
+                composite.Top = wa.Top;
+                composite.Topmost = true;
+                composite.Show();
 
                 // Load images from directory.
                 images = new List<ImageSource>();
                 foreach (var file in Directory.GetFiles("Input", "*.png"))
                 {
                     FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
-                    Image i = new Image();
                     BitmapImage bi = new BitmapImage();
+                    bi.CacheOption = BitmapCacheOption.OnLoad;
                     bi.BeginInit();
                     bi.StreamSource = fs;
                     bi.EndInit();
-                    i.Source = bi;
                     images.Add((ImageSource)bi);
                 }
 
-                Random r = new Random();
-                images = images.OrderBy(_ => r.Next()).Take(10).ToList(); //TODO Remove.
-
-                MessageBox.Show("Börja med att manuellt maximera bildspel- och kompositions-fönstrena på sina respektive skärmar.");
+                slideshow = Task.Factory.StartNew(runSlideshow);
             }
             else
             {
@@ -64,16 +72,11 @@ namespace SubconsciousDesignGenerator
         {
             Dispatcher.Invoke(() =>
             {
-                // TODO Help user position themselves infront of the camera.
+                // Help user position themselves infront of the camera.
+                (new GazeWindow("SKAPA DIN UNDERMEDVETNA BILDKOMPOSITION HÄR.")).ShowDialog();
 
                 // Ask user if they want to begin.
-                var b = false;
-                while (!b)
-                {
-                    var startDialog = new DialogWindow("STARTA BILDSPEL & AVLÄSNING?", "JA", "NEJ");
-                    startDialog.ShowDialog();
-                    b = startDialog.DialogResult.Value;
-                }
+                (new DialogWindow("STARTA BILDSPEL & AVLÄSNING?", "JA")).ShowDialog();
 
                 Slide.Visibility = Visibility.Visible;
             });
@@ -129,7 +132,7 @@ namespace SubconsciousDesignGenerator
                 if (printDialog.DialogResult.Value) composite.PrintCompositeImage();
 
                 // Display statistics.
-                var statisticsWindow = new Statistics(md);
+                var statisticsWindow = new StatisticsWindow(md);
                 statisticsWindow.Show();
 
                 // Enable new session after some time has passed.
@@ -141,7 +144,7 @@ namespace SubconsciousDesignGenerator
             });
         }
 
-        bool uniqueHit(Point point, List<Point> visited)
+        bool unique(Point point, List<Point> visited)
         {
             const double MINIMUM_DISTANCE = 50;
             return visited.TrueForAll(p => distance(point, p) <= MINIMUM_DISTANCE);
@@ -155,22 +158,9 @@ namespace SubconsciousDesignGenerator
         void metric(Point p, ref List<Point> points, ref int imageHit, ref int imageNotHit)
         {
             if (imageNotHit == 0 && imageHit == 0) imageHit = 3;  // Large bonus if the image was selected first.
-            else if (uniqueHit(p, points)) imageHit += 2;         // Medium bonus if the gaze point is new.
+            else if (unique(p, points)) imageHit += 2;            // Medium bonus if the gaze point is new.
             else ++imageHit;                                      // One point if the user is simply staring at the image.
             points.Add(p);
-        }
-
-        void onMaximized(object s, EventArgs e)
-        {
-            WindowStyle = WindowStyle.None;
-            WindowState = WindowState.Maximized;
-            ResizeMode = ResizeMode.NoResize;
-            slideshow = Task.Factory.StartNew(runSlideshow);
-        }
-
-        void onNextSlide(object s, DataTransferEventArgs e)
-        {
-
         }
     }
 }

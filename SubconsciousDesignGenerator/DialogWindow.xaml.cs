@@ -21,12 +21,23 @@ namespace SubconsciousDesignGenerator
     /// </summary>
     public partial class DialogWindow : Window
     {
+        bool requireConfirm;
+
         public DialogWindow(string instructions, string confirm, string cancel)
         {
             InitializeComponent();
             Instructions.Text = instructions;
             ConfirmText.Text = confirm;
             CancelText.Text = cancel;
+            requireConfirm = false;
+        }
+
+        public DialogWindow(string instructions, string confirm)
+        {
+            InitializeComponent();
+            Instructions.Text = instructions;
+            CancelInstructions.Opacity = 0.1;
+            requireConfirm = true;
         }
 
         void onKeyDown(object s, KeyEventArgs e)
@@ -34,7 +45,7 @@ namespace SubconsciousDesignGenerator
             switch (e.Key)
             {
                 case Key.Enter: DialogResult = true; break;
-                case Key.Decimal: DialogResult = false; break;
+                case Key.Decimal: if (!requireConfirm) DialogResult = false; break;
                 case Key.Escape: Application.Current.Shutdown(); break;
             }
         }
