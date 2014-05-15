@@ -6,10 +6,23 @@
         WindowState="Maximized" 
         Topmost="True" 
         Cursor="None">
+    <Window.Effect>
+        <BlurEffect x:Name="Blur"/>
+    </Window.Effect>
     <Window.Triggers>
-        <StaticResource ResourceKey="FadeInWindow" />
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Blur" Storyboard.TargetProperty="Radius" From="100" To="0" Duration="0:0:1">
+                        <DoubleAnimation.EasingFunction>
+                            <ExponentialEase/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
     </Window.Triggers>
-    <Grid VerticalAlignment="Center">
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="80">
         <StaticResource ResourceKey="DataTable" />
     </Grid>
 </Window>

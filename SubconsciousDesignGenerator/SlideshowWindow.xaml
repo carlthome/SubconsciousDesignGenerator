@@ -5,30 +5,44 @@
         Cursor="None"
         Loaded="onLoaded"
         WindowState="Maximized"
-        WindowStyle="None">
+        WindowStyle="None"
+        ResizeMode="NoResize">
     <Grid Margin="20" Name="Slide">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Image Margin="20" Name="Image1" Height="Auto" Width="Auto" Grid.Column="0" RenderOptions.BitmapScalingMode="NearestNeighbor">
+        <Canvas Name="Points" Grid.ColumnSpan="2"/>
+        <Image Margin="40" Name="Image1" Height="Auto" Width="Auto" Grid.Column="0" SourceUpdated="onNextSlide">
             <Image.Triggers>
+                <EventTrigger RoutedEvent="Image.MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Image2" Storyboard.TargetProperty="Opacity" From="1.0" To="0.9" Duration="0:0:0"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
                 <EventTrigger RoutedEvent="Image.MouseMove">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation AutoReverse="True" Storyboard.TargetName="Image1" Storyboard.TargetProperty="Opacity" From="1.0" To="0.75" Duration="0:0:0.03"/>
-                            <DoubleAnimation Storyboard.TargetName="Image2" Storyboard.TargetProperty="Opacity" From="1.0" To="0.9" Duration="0:0:0"/>
+                            <DoubleAnimation Storyboard.TargetName="Image1" Storyboard.TargetProperty="Opacity" From="0.9" To="1" Duration="0:0:0.01"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
             </Image.Triggers>
         </Image>
-        <Image Margin="20" Name="Image2" Height="Auto" Width="Auto" Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor">
+        <Image Margin="40" Name="Image2" Height="Auto" Width="Auto" Grid.Column="1" SourceUpdated="onNextSlide">
             <Image.Triggers>
                 <EventTrigger RoutedEvent="Image.MouseMove">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation AutoReverse="True" Storyboard.TargetName="Image2" Storyboard.TargetProperty="Opacity" From="1.0" To="0.75" Duration="0:0:0.03"/>
+                            <DoubleAnimation Storyboard.TargetName="Image2" Storyboard.TargetProperty="Opacity" From="0.9" To="1" Duration="0:0:0.01"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="Image.MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
                             <DoubleAnimation Storyboard.TargetName="Image1" Storyboard.TargetProperty="Opacity" From="1.0" To="0.9" Duration="0:0:0"/>
                         </Storyboard>
                     </BeginStoryboard>

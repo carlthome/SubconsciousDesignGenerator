@@ -3,17 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="SlideshowWindow.xaml">
     <Application.Resources>
-        <EventTrigger x:Key="FadeInWindow" RoutedEvent="Window.Loaded">
-            <BeginStoryboard>
-                <Storyboard Name="FadeInWindowStoryboard">
-                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1">
-                        <DoubleAnimation.EasingFunction>
-                            <ExponentialEase/>
-                        </DoubleAnimation.EasingFunction>
-                    </DoubleAnimation>
-                </Storyboard>
-            </BeginStoryboard>
-        </EventTrigger>
+        <Storyboard x:Key="BlinkAnimation" x:Shared="False">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1.0" To="0.0" Duration="0:0:0.1" AutoReverse="True"/>
+        </Storyboard>
         <Style TargetType="TextBlock" x:Key="LargeText">
             <Setter Property="FontSize" Value="72" />
             <Setter Property="FontWeight" Value="Bold" />
@@ -31,8 +23,11 @@
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
         <StackPanel x:Key="DataTable" x:Shared="False">
-            <TextBlock HorizontalAlignment="Center" Text="Ögonmätningsdata" Style="{StaticResource LargeText}"/>
-            <TextBlock HorizontalAlignment="Center" Text="{Binding EuclideanNorm, StringFormat={}Focus: {0:P0}}" Style="{StaticResource SmallText}"/>
+            <TextBlock Text="DIN UNDERMEDVETNA BILDKOMPOSITION" Style="{StaticResource LargeText}"/>
+            <TextBlock Text="{Binding AverageHitCount, StringFormat={}MEDELPOÄNG: {0:N2}}" Style="{StaticResource MediumText}"/>
+            <TextBlock Text="{Binding MedianHitCount, StringFormat={}MEDIANPOÄNG: {0:N0}}" Style="{StaticResource MediumText}"/>
+            <TextBlock Text="{Binding EuclideanNorm, StringFormat={}SELEKTIVITET: {0:P2}}" Style="{StaticResource MediumText}"/>
+            <TextBlock Margin="0,15,0,0" Text="POÄNG PER BILD:" Style="{StaticResource MediumText}"/>
             <ItemsControl VerticalAlignment="Top" HorizontalAlignment="Center" ItemsSource="{Binding HitCounts}">
                 <ItemsControl.Template>
                     <ControlTemplate>
@@ -41,10 +36,10 @@
                 </ItemsControl.Template>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <DockPanel Margin="20">
-                            <Image DockPanel.Dock="Top" Source="{Binding ImageSource}" Width="48" />
-                            <TextBlock Text="{Binding HitCount}" HorizontalAlignment="Center" DockPanel.Dock="Bottom" Style="{StaticResource SmallText}" />
-                        </DockPanel>
+                        <StackPanel Margin="5">
+                            <Image Source="{Binding ImageSource}" Width="48" />
+                            <TextBlock Text="{Binding HitCount}" HorizontalAlignment="Center" Style="{StaticResource SmallText}" />
+                        </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

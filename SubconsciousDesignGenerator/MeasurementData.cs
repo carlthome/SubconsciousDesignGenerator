@@ -15,7 +15,8 @@ namespace SubconsciousDesignGenerator
             public double HitCountNormalized { get; set; }
         }
 
-        public int AverageHitCount { get; set; }
+        public double AverageHitCount { get; set; }
+        public int MedianHitCount { get; set; }
         public double EuclideanNorm { get; set; }
         public List<Measurement> HitCounts { get; set; }
 
@@ -27,17 +28,20 @@ namespace SubconsciousDesignGenerator
             var count = kvps.Count;
             var total = (max != 0) ? kvps.Sum(kvp => kvp.Value) : 1;
 
-            AverageHitCount = (int)Math.Round((double)total / (double)count);
+            AverageHitCount = total / (double)count;
+            MedianHitCount = kvps[kvps.Count / 2].Value; // Works because the list is sorted.
             HitCounts = new List<Measurement>();
-            kvps.ForEach(kvp => HitCounts.Add(new Measurement { 
-                ImageSource = kvp.Key, 
-                HitCount = kvp.Value,  
-                HitCountNormalized = kvp.Value / (double) total
+            kvps.ForEach(kvp => HitCounts.Add(new Measurement
+            {
+                ImageSource = kvp.Key,
+                HitCount = kvp.Value,
+                HitCountNormalized = kvp.Value / (double)total
             }));
-            EuclideanNorm = Math.Sqrt(HitCounts.Sum(m => Math.Pow(m.HitCount / (double) total, 2)));
-
+            EuclideanNorm = Math.Sqrt(HitCounts.Sum(m => Math.Pow(m.HitCount / (double)total, 2)));
+#if DEBUG
             Debug.Assert(max >= min);
             Debug.Assert(0 <= EuclideanNorm && EuclideanNorm <= 1);
+#endif
         }
     }
 }

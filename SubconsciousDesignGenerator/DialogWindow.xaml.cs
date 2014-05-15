@@ -36,8 +36,18 @@ namespace SubconsciousDesignGenerator
         {
             InitializeComponent();
             Instructions.Text = instructions;
+            ConfirmText.Text = confirm;
             CancelInstructions.Opacity = 0.1;
             requireConfirm = true;
+        }
+
+        public DialogWindow(string instructions)
+        {
+            InitializeComponent();
+            Instructions.Text = instructions;
+            CancelInstructions.Opacity = 0.1;
+            ConfirmInstructions.Opacity = 0.1;
+            IsEnabled = false;
         }
 
         void onKeyDown(object s, KeyEventArgs e)

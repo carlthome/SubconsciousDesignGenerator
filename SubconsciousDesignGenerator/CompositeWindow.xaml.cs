@@ -26,16 +26,16 @@ namespace SubconsciousDesignGenerator
         {
             DataContext = md;
 
-            // If the user looked at a few images a lot more than the others, keep only those few images.
-            var layers = md.HitCounts.Take((int)Math.Round(md.HitCounts.Count * (1 - md.EuclideanNorm)));
+            // If the user looked at a few images a lot more than the others, keep only those few images. Also, skip images that got less than the average amount of hits.
+            var layers = md.HitCounts
+                .Take((int)Math.Round(md.HitCounts.Count * (1 - md.EuclideanNorm)))
+                .Where(l => l.HitCount >= md.AverageHitCount)
+                .ToList();
 
             // Go through all image layers and scale, position and rotate them on the layout canvas.
             var z = 1;
             foreach (var hc in layers)
             {
-                // Skip images that got less than the average amount of hits.
-                if (hc.HitCount < md.AverageHitCount) continue;
-
                 // Create new image control.
                 var i = new Image();
                 RenderOptions.SetBitmapScalingMode(i, BitmapScalingMode.Fant);
@@ -43,13 +43,14 @@ namespace SubconsciousDesignGenerator
                 Canvas.SetZIndex(i, ++z);
 
                 // Scale image.
-                i.Height = Math.Sqrt(md.EuclideanNorm * hc.HitCountNormalized) * CompositeImage.Height;
-                i.Width = Math.Sqrt(md.EuclideanNorm * hc.HitCountNormalized) * CompositeImage.Width;
+                i.Height = md.EuclideanNorm * layers.Count * CompositeImage.Height / z;
+                i.Width = md.EuclideanNorm * layers.Count * CompositeImage.Width / z;
 
                 // Position image on the canvas.
+                Func<double> center = () => (CompositeImage.Width - i.Width) / 2; // Image center position on canvas.
                 Func<double, double> random = (double x) => r.NextDouble() * 2 * x - x; // Random number between -x and x.
-                Canvas.SetLeft(i, random(Width*0.5) - i.Width / 2);
-                Canvas.SetTop(i, random(Height*0.5) - i.Height / 2);
+                Canvas.SetLeft(i, center() + random((1 - md.EuclideanNorm) * CompositeImage.Width));
+                Canvas.SetTop(i, center() + random((1 - md.EuclideanNorm) * CompositeImage.Height));
 
                 // Rotate image randomly.
                 i.RenderTransform = new RotateTransform(r.Next(360));
@@ -66,6 +67,7 @@ namespace SubconsciousDesignGenerator
             Size size = new Size(CompositeImage.Width, CompositeImage.Height);
             CompositeImage.UpdateLayout();
             CompositeImage.Arrange(new Rect(size));
+
             RenderTargetBitmap r = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
             r.Render(CompositeImage);
 
@@ -92,7 +94,8 @@ namespace SubconsciousDesignGenerator
         void onDataContextChanged(object s, DependencyPropertyChangedEventArgs e)
         {
             Layout.Children.Clear();
-            var sb = (FindResource("BlinkAnimation") as Storyboard);
+            //TODO Fix.
+            var sb = FindResource("BlinkAnimation") as Storyboard;
             Storyboard.SetTarget(sb, this);
             sb.Begin();
         }

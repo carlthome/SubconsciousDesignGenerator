@@ -48,7 +48,7 @@ namespace SubconsciousDesignGenerator
             {
                 raiseHeadMoved(-1);
             }
-            else if (e.GazeData.TrackingStatus == TrackingStatus.BothEyesTracked)
+            else
             {
                 // Calculate the user's head's distance from the eye tracker camera.
                 //TODO Include the eye tracker angle in the mount when calculating the distance to the user's eyes.
