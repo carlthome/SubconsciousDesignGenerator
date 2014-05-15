@@ -45,8 +45,7 @@ namespace SubconsciousDesignGenerator
         {
             InitializeComponent();
             Instructions.Text = instructions;
-            CancelInstructions.Opacity = 0.1;
-            ConfirmInstructions.Opacity = 0.1;
+            ButtonInstructions.Visibility = Visibility.Hidden;
             IsEnabled = false;
         }
 

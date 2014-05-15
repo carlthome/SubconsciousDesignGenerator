@@ -144,7 +144,7 @@ namespace SubconsciousDesignGenerator
                 Slide.Visibility = Visibility.Hidden;
 
                 // Generate image composite while displaying a notice to the user.
-                var imageGenerationProgress = new DialogWindow("SKAPAR DIN UNDERMEDVETNA BILDKOMPOSITION.");
+                var imageGenerationProgress = new DialogWindow("DIN UNDERMEDVETNA BILDKOMPOSITION SKAPAS.\nVAR GOD VÄNTA.");
                 imageGenerationProgress.FadeIn.Completed += ((s, e) =>
                 {
                     composite.CreateCompositeImage(md);

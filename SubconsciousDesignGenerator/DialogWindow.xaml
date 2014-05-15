@@ -21,25 +21,17 @@
             </BeginStoryboard>
         </EventTrigger>
     </Window.Triggers>
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <TextBlock Margin="20" Grid.Row="0" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
-        <Grid HorizontalAlignment="Center" Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="200">
+        <TextBlock Margin="20" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
+        <StackPanel Name="ButtonInstructions" Orientation="Horizontal" HorizontalAlignment="Center">
             <StackPanel Name="CancelInstructions" VerticalAlignment="Bottom">
                 <Rectangle Fill="Red" Width="100" Height="100" RadiusX="20" RadiusY="20" />
                 <TextBlock Foreground="Red" Style="{StaticResource MediumText}" Name="CancelText" HorizontalAlignment="Center" />
             </StackPanel>
-            <StackPanel Name="ConfirmInstructions" Grid.Column="1" Margin="20,0,0,0">
-                <Rectangle Fill="Lime" RadiusX="20" RadiusY="20" Width="100" Height="200"/>
-                <TextBlock Foreground="Lime" Style="{StaticResource MediumText}" Name="ConfirmText" HorizontalAlignment="Center" />
-            </StackPanel>
-        </Grid>
-    </Grid>
+                <StackPanel Name="ConfirmInstructions" Margin="20,0,0,0">
+                    <Rectangle Fill="Lime" RadiusX="20" RadiusY="20" Width="100" Height="200"/>
+                    <TextBlock Foreground="Lime" Style="{StaticResource MediumText}" Name="ConfirmText" HorizontalAlignment="Center" />
+                </StackPanel>
+        </StackPanel>
+    </StackPanel>
 </Window>
