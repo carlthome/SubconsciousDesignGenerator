@@ -21,7 +21,7 @@
             </BeginStoryboard>
         </EventTrigger>
     </Window.Triggers>
-    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="200">
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="960">
         <TextBlock Margin="20" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
         <StackPanel Name="ButtonInstructions" Orientation="Horizontal" HorizontalAlignment="Center">
             <StackPanel Name="CancelInstructions" VerticalAlignment="Bottom">

@@ -145,12 +145,13 @@ namespace SubconsciousDesignGenerator
 
                 // Generate image composite while displaying a notice to the user.
                 var imageGenerationProgress = new DialogWindow("DIN UNDERMEDVETNA BILDKOMPOSITION SKAPAS.\nVAR GOD VÄNTA.");
-                imageGenerationProgress.FadeIn.Completed += ((s, e) =>
-                {
-                    composite.CreateCompositeImage(md);
-                    composite.SaveCompositeImage();
-                    imageGenerationProgress.Close();
-                });
+                Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
+                   {
+                       composite.CreateCompositeImage(md);
+                       composite.SaveCompositeImage();
+                       imageGenerationProgress.Close();
+                   })
+                );
                 imageGenerationProgress.ShowDialog();
 
                 // Ask user if they want to print the composite image.

@@ -9,7 +9,7 @@
         Closing="onClosing"
         ContentRendered="onContentRendered"
         Name="Gaze">
-    <Grid>
+    <Grid MaxWidth="960">
         <TextBlock Text="Default" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
     </Grid>
 </Window>
