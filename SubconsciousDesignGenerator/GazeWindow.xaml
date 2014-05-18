@@ -9,7 +9,12 @@
         Closing="onClosing"
         ContentRendered="onContentRendered"
         Name="Gaze">
-    <Grid MaxWidth="960">
-        <TextBlock Text="Default" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Column="1" Text="Default" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
     </Grid>
 </Window>

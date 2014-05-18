@@ -22,7 +22,14 @@
             </BeginStoryboard>
         </EventTrigger>
     </Window.Triggers>
-    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="960">
-        <StaticResource ResourceKey="DataTable" />
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="1">
+            <StaticResource ResourceKey="DataTable" />
+        </Border>
     </Grid>
 </Window>

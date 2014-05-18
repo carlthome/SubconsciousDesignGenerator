@@ -24,15 +24,12 @@
         </Style>
         <StackPanel x:Key="DataTable" x:Shared="False">
             <WrapPanel>
-                <WrapPanel.Resources>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Margin" Value="0,0,50,0" />
-                    </Style>
-                </WrapPanel.Resources>
-                <TextBlock Text="DIN UNDERMEDVETNA BILDKOMPOSITION" Style="{StaticResource LargeText}"/>
-                <TextBlock Text="{Binding AverageHitCount, StringFormat={}MEDELPOÄNG: {0:N2}}" Style="{StaticResource MediumText}"/>
-                <TextBlock Text="{Binding MedianHitCount, StringFormat={}MEDIANPOÄNG: {0:N0}}" Style="{StaticResource MediumText}"/>
-                <TextBlock Text="{Binding EuclideanNorm, StringFormat={}SELEKTIVITET: {0:P2}}" Style="{StaticResource MediumText}"/>
+                <TextBlock Text="DIN UNDERMEDVETNA BILDKOMPOSITION" Style="{StaticResource LargeText}" VerticalAlignment="Center" Margin="0,0,40,0"/>
+                <UniformGrid Columns="3" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding AverageHitCount, StringFormat={}MEDELPOÄNG: {0:N2}}" Style="{StaticResource MediumText}"/>
+                    <TextBlock Text="{Binding MedianHitCount, StringFormat={}MEDIANPOÄNG: {0:N0}}" Style="{StaticResource MediumText}"/>
+                    <TextBlock Text="{Binding EuclideanNorm, StringFormat={}SELEKTIVITET: {0:P2}}" Style="{StaticResource MediumText}"/>
+                </UniformGrid>
             </WrapPanel>
             <ItemsControl VerticalAlignment="Top" HorizontalAlignment="Center" ItemsSource="{Binding HitCounts}">
                 <ItemsControl.Template>

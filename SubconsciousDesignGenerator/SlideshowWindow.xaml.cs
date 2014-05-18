@@ -145,12 +145,12 @@ namespace SubconsciousDesignGenerator
 
                 // Generate image composite while displaying a notice to the user.
                 var imageGenerationProgress = new DialogWindow("DIN UNDERMEDVETNA BILDKOMPOSITION SKAPAS.\nVAR GOD VÄNTA.");
-                Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() =>
+                imageGenerationProgress.IsEnabledChanged += ((s, e) =>
                    {
                        composite.CreateCompositeImage(md);
                        composite.SaveCompositeImage();
                        imageGenerationProgress.Close();
-                   })
+                   }
                 );
                 imageGenerationProgress.ShowDialog();
 
@@ -160,7 +160,7 @@ namespace SubconsciousDesignGenerator
                 if (printDialog.DialogResult.Value)
                 {
                     var printProgress = new DialogWindow("SKRIVER UT DIN UNDERMEDVETNA BILDKOMPOSITION.");
-                    printProgress.FadeIn.Completed += ((s, e) =>
+                    printProgress.IsEnabledChanged += ((s, e) =>
                     {
                         composite.PrintCompositeImage();
                         printProgress.Close();

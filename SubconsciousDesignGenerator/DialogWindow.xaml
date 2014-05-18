@@ -7,12 +7,13 @@
         Topmost="True"
         Cursor="None"
         KeyDown="onKeyDown"
+        IsEnabled="False"
         Name="Dialog">
     <Window.Triggers>
         <EventTrigger RoutedEvent="Window.Loaded">
             <BeginStoryboard>
                 <Storyboard Name="FadeIn">
-                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1">
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1" Completed="onFadedIn">
                         <DoubleAnimation.EasingFunction>
                             <ExponentialEase/>
                         </DoubleAnimation.EasingFunction>
@@ -21,17 +22,24 @@
             </BeginStoryboard>
         </EventTrigger>
     </Window.Triggers>
-    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="960">
-        <TextBlock Margin="20" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
-        <StackPanel Name="ButtonInstructions" Orientation="Horizontal" HorizontalAlignment="Center">
-            <StackPanel Name="CancelInstructions" VerticalAlignment="Bottom">
-                <Rectangle Fill="Red" Width="100" Height="100" RadiusX="20" RadiusY="20" />
-                <TextBlock Foreground="Red" Style="{StaticResource MediumText}" Name="CancelText" HorizontalAlignment="Center" />
-            </StackPanel>
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="1">
+            <TextBlock Margin="20" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
+            <StackPanel Name="ButtonInstructions" Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel Name="CancelInstructions" VerticalAlignment="Bottom">
+                    <Rectangle Fill="Red" Width="100" Height="100" RadiusX="20" RadiusY="20" />
+                    <TextBlock Foreground="Red" Style="{StaticResource MediumText}" Name="CancelText" HorizontalAlignment="Center" />
+                </StackPanel>
                 <StackPanel Name="ConfirmInstructions" Margin="20,0,0,0">
                     <Rectangle Fill="Lime" RadiusX="20" RadiusY="20" Width="100" Height="200"/>
                     <TextBlock Foreground="Lime" Style="{StaticResource MediumText}" Name="ConfirmText" HorizontalAlignment="Center" />
                 </StackPanel>
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

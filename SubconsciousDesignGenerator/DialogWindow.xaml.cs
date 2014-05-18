@@ -58,5 +58,10 @@ namespace SubconsciousDesignGenerator
                 case Key.Escape: Application.Current.Shutdown(); break;
             }
         }
+
+        void onFadedIn(object s, EventArgs e)
+        {
+            IsEnabled = true;
+        }
     }
 }

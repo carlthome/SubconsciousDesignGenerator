@@ -68,7 +68,7 @@ namespace SubconsciousDesignGenerator
             CompositeImage.UpdateLayout();
             CompositeImage.Arrange(new Rect(size));
 
-            RenderTargetBitmap r = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
+            RenderTargetBitmap r = new RenderTargetBitmap((int)size.Width, (int)size.Height, 72, 72, PixelFormats.Pbgra32); //TODO Set right DPI.
             r.Render(CompositeImage);
 
             using (FileStream fs = File.Create(f))

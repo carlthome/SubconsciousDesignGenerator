@@ -38,7 +38,7 @@ namespace SubconsciousDesignGenerator
 
         void onHeadMoved(object s, HeadMovementEventArgs e)
         {
-            if (e.Distance != -1) Dispatcher.Invoke(new Action(() => DialogResult = true));
+            if (e.Distance != -1) Dispatcher.Invoke(new Action(() => DialogResult = true)); //TODO Fade out.
         }
     }
 }
