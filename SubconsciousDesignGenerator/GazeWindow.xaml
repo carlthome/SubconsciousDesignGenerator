@@ -6,8 +6,6 @@
         WindowState="Maximized"
         Topmost="True"
         Cursor="None"
-        Closing="onClosing"
-        ContentRendered="onContentRendered"
         Name="Gaze">
     <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
         <Grid.ColumnDefinitions>
@@ -15,6 +13,20 @@
             <ColumnDefinition Width="8*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="1" Text="Default" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="Default" Style="{StaticResource LargeText}" Name="Instructions" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" >
+            <TextBlock.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard FillBehavior="HoldEnd">
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:2" Completed="onFadedOut">
+                                <DoubleAnimation.EasingFunction>
+                                    <ExponentialEase EasingMode="EaseIn"/>
+                                </DoubleAnimation.EasingFunction>
+                            </DoubleAnimation>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </TextBlock.Triggers>
+        </TextBlock>
     </Grid>
 </Window>

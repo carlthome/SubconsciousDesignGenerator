@@ -41,12 +41,13 @@ namespace SubconsciousDesignGenerator
             requireConfirm = true;
         }
 
-        public DialogWindow(string instructions)
+        public DialogWindow(string instructions, Action a = null)
         {
             InitializeComponent();
             Instructions.Text = instructions;
-            ButtonInstructions.Visibility = Visibility.Hidden;
+            ButtonInstructions.Visibility = Visibility.Collapsed;
             IsEnabled = false;
+            if (a != null) FadeIn.Completed += (s, e) => { a(); Close(); };
         }
 
         void onKeyDown(object s, KeyEventArgs e)
@@ -57,11 +58,6 @@ namespace SubconsciousDesignGenerator
                 case Key.Decimal: if (!requireConfirm) DialogResult = false; break;
                 case Key.Escape: Application.Current.Shutdown(); break;
             }
-        }
-
-        void onFadedIn(object s, EventArgs e)
-        {
-            IsEnabled = true;
         }
     }
 }

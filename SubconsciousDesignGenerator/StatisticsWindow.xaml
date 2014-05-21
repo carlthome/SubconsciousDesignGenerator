@@ -21,6 +21,20 @@
                 </Storyboard>
             </BeginStoryboard>
         </EventTrigger>
+        <EventTrigger RoutedEvent="Window.MouseEnter">
+            <BeginStoryboard Name="FadeOut">
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" BeginTime="0" Duration="0:0:10" Completed="onFadedOut">
+                        <DoubleAnimation.EasingFunction>
+                            <ExponentialEase EasingMode="EaseIn"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="Window.MouseMove">
+            <SeekStoryboard BeginStoryboardName="FadeOut" Origin="BeginTime" Offset="0" />
+        </EventTrigger>
     </Window.Triggers>
     <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
         <Grid.ColumnDefinitions>
@@ -29,7 +43,29 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Border Grid.Column="1">
-            <StaticResource ResourceKey="DataTable" />
+            <StackPanel>
+                <WrapPanel Orientation="Horizontal">
+                    <TextBlock Text="DIN UNDERMEDVETNA BILDKOMPOSITION" Style="{StaticResource LargeText}" VerticalAlignment="Center" Margin="0,0,40,0"/>
+                    <TextBlock Text="{Binding AverageHitCount, StringFormat={}MEDELPOÄNG: {0:N2}}" Style="{StaticResource MediumText}" Margin="0,0,40,0"/>
+                    <TextBlock Text="{Binding MedianHitCount, StringFormat={}MEDIANPOÄNG: {0:N0}}" Style="{StaticResource MediumText}" Margin="0,0,40,0"/>
+                    <TextBlock Text="{Binding EuclideanNorm, StringFormat={}SELEKTIVITET: {0:P2}}" Style="{StaticResource MediumText}" Margin="0,0,40,0"/>
+                </WrapPanel>
+                <ItemsControl ItemsSource="{Binding HitCounts}">
+                    <ItemsControl.Template>
+                        <ControlTemplate>
+                            <WrapPanel Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" IsItemsHost="True" Orientation="Horizontal"/>
+                        </ControlTemplate>
+                    </ItemsControl.Template>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="5">
+                                <Image Source="{Binding ImageSource}" Width="48" />
+                                <TextBlock Text="{Binding HitCount}" HorizontalAlignment="Center" Style="{StaticResource SmallText}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </Border>
     </Grid>
 </Window>

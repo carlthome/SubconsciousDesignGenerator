@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace SubconsciousDesignGenerator
 {
@@ -10,6 +12,7 @@ namespace SubconsciousDesignGenerator
     {
         public class Measurement
         {
+            public string ImagePath { get; set; }
             public ImageSource ImageSource { get; set; }
             public int HitCount { get; set; }
             public double HitCountNormalized { get; set; }
@@ -20,7 +23,7 @@ namespace SubconsciousDesignGenerator
         public double EuclideanNorm { get; set; }
         public List<Measurement> HitCounts { get; set; }
 
-        public MeasurementData(Dictionary<ImageSource, int> hitCounts)
+        public MeasurementData(Dictionary<string, int> hitCounts, Dictionary<string, BitmapImage> images)
         {
             var kvps = hitCounts.OrderByDescending(kvp => kvp.Value).ToList();
             var max = kvps.Max(kvp => kvp.Value);
@@ -33,7 +36,8 @@ namespace SubconsciousDesignGenerator
             HitCounts = new List<Measurement>();
             kvps.ForEach(kvp => HitCounts.Add(new Measurement
             {
-                ImageSource = kvp.Key,
+                ImagePath = kvp.Key,
+                ImageSource = images[kvp.Key],
                 HitCount = kvp.Value,
                 HitCountNormalized = kvp.Value / (double)total
             }));

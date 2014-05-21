@@ -7,13 +7,12 @@
         Topmost="True"
         Cursor="None"
         KeyDown="onKeyDown"
-        IsEnabled="False"
         Name="Dialog">
     <Window.Triggers>
         <EventTrigger RoutedEvent="Window.Loaded">
             <BeginStoryboard>
                 <Storyboard Name="FadeIn">
-                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1" Completed="onFadedIn">
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:1">
                         <DoubleAnimation.EasingFunction>
                             <ExponentialEase/>
                         </DoubleAnimation.EasingFunction>

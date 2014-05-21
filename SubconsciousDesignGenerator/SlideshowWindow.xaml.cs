@@ -24,9 +24,9 @@ namespace SubconsciousDesignGenerator
     {
         Task slideshow;
         CompositeWindow composite;
-        List<ImageSource> imageSources;
+        Dictionary<string, BitmapImage> images;
 #if DEBUG
-        const int SLIDE_DURATION = 10;
+        const int SLIDE_DURATION = 100;
 #else
         const int SLIDE_DURATION = 800;
 #endif
@@ -39,7 +39,7 @@ namespace SubconsciousDesignGenerator
         {
             if (App.eyeTracker.connected)
             {
-                // Open composite window maximized on second screen if possible, otherwise share half the width of the primary screen with this window.
+                // Open composite window maximized on second screen if possible.
                 composite = new CompositeWindow();
                 if (System.Windows.Forms.SystemInformation.MonitorCount > 1)
                 {
@@ -50,31 +50,39 @@ namespace SubconsciousDesignGenerator
                     composite.Topmost = true;
                     composite.Show();
                 }
-                else
-                {
-                    MessageBox.Show("Projektorn saknas.");
-                    composite.Show();
-                    System.Drawing.Rectangle wa = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
-                    WindowState = composite.WindowState = WindowState.Normal;
-                    Top = composite.Top = wa.Top;
-                    Left = wa.Left;
-                    Width = composite.Width = composite.Left = wa.Width / 2;
-                    Height = composite.Height = wa.Height;
-                }
+#if DEBUG
+            else
+            {
+                composite.Show();
+                System.Drawing.Rectangle wa = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
+                WindowState = composite.WindowState = WindowState.Normal;
+                Top = composite.Top = wa.Top;
+                Left = wa.Left;
+                Width = composite.Width = composite.Left = wa.Width / 2;
+                Height = composite.Height = wa.Height;
+            }
+#endif
+                // Load images.
+                new DialogWindow(
+                    "LADDAR BILDER.\nVAR GOD VÄNTA.",
+                    () =>
+                    {
+                        images = new Dictionary<string, BitmapImage>();
+                        foreach (var imagePath in Directory.GetFiles("Input", "*.png").ToList())
+                        {
+                            FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+                            BitmapImage bi = new BitmapImage();
+                            bi.BeginInit();
+                            bi.DecodePixelHeight = (int)Height;
+                            bi.CacheOption = BitmapCacheOption.OnLoad;
+                            bi.StreamSource = fs;
+                            bi.EndInit();
+                            images.Add(imagePath, bi);
+                        }
+                    }
+                ).ShowDialog();
 
-                // Load images from directory.
-                imageSources = new List<ImageSource>();
-                foreach (var file in Directory.GetFiles("Input", "*.png"))
-                {
-                    FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
-                    BitmapImage bi = new BitmapImage();
-                    bi.CacheOption = BitmapCacheOption.OnLoad;
-                    bi.BeginInit();
-                    bi.StreamSource = fs;
-                    bi.EndInit();
-                    imageSources.Add((ImageSource)bi);
-                }
-
+                // Start slideshow.
                 slideshow = Task.Factory.StartNew(runSlideshow);
             }
             else
@@ -92,93 +100,85 @@ namespace SubconsciousDesignGenerator
                 (new GazeWindow("SKAPA DIN UNDERMEDVETNA BILDKOMPOSITION HÄR.")).ShowDialog();
 
                 // Ask user if they want to begin.
-                (new DialogWindow("STARTA BILDSPEL & AVLÄSNING?", "JA")).ShowDialog();
+                (new DialogWindow("STARTA BILDSPEL\n&\nAVLÄSNING?", "JA")).ShowDialog();
 
                 Slide.Visibility = Visibility.Visible;
             });
 
             // Display slides and collect reaction data.
-            var hits = new Dictionary<ImageSource, int>();
+            var hits = new Dictionary<string, int>();
             Random r = new Random();
-            var q = new Queue<ImageSource>(imageSources.OrderBy(_ => r.Next()));
-            imageSources.ForEach(i => hits.Add(i, 0));
-            int image1HitCount = 0, image2HitCount = 0;
+            var q = new Queue<string>(images.Keys.OrderBy(_ => r.Next()));
+            foreach (var imagePath in images.Keys) hits.Add(imagePath, 0);
+            int hc1 = 0, hc2 = 0;
             var points = new List<Point>();
-            Image1.MouseMove += (Object s, MouseEventArgs e) => metric(e.GetPosition(this), ref points, ref image1HitCount, ref image2HitCount);
-            Image2.MouseMove += (Object s, MouseEventArgs e) => metric(e.GetPosition(this), ref points, ref image2HitCount, ref image1HitCount);
+            Image1.MouseMove += (Object s, MouseEventArgs e) => metric(e.GetPosition(this), ref points, ref hc1, ref hc2);
+            Image2.MouseMove += (Object s, MouseEventArgs e) => metric(e.GetPosition(this), ref points, ref hc2, ref hc1);
 
-            while (q.Count >= 2)
+            while (q.Count > 2)
             {
                 // Switch slide.
                 points.Clear();
-                image1HitCount = 0;
-                image2HitCount = 0;
-                ImageSource is1 = q.Dequeue();
-                ImageSource is2 = q.Dequeue();
+                hc1 = 0;
+                hc2 = 0;
+                string i1 = q.Dequeue();
+                string i2 = q.Dequeue();
                 Dispatcher.Invoke(() =>
                 {
 #if DEBUG
                     Points.Children.Clear();
 #endif
-                    Image1.SetValue(Image.SourceProperty, is1);
-                    Image2.SetValue(Image.SourceProperty, is2);
+                    Image1.SetValue(Image.SourceProperty, images[i1]);
+                    Image2.SetValue(Image.SourceProperty, images[i2]);
                 });
 
                 // Measure hits for a while.
                 slideshow.Wait(SLIDE_DURATION);
 
                 // Update gaze hit data.
-                hits[is1] += image1HitCount;
-                hits[is2] += image2HitCount;
+                hits[i1] += hc1;
+                hits[i2] += hc2;
 
                 // Determine winning image.
-                if (image1HitCount > image2HitCount) q.Enqueue(is1);
-                else q.Enqueue(is2);
+                if (hc1 > hc2) q.Enqueue(i1);
+                else q.Enqueue(i2);
             }
-
-            // Construct result data from the hit counts.
-            var md = new MeasurementData(hits);
 
             Dispatcher.Invoke(() =>
             {
                 Slide.Visibility = Visibility.Hidden;
+                MeasurementData md = null;
 
-                // Generate image composite while displaying a notice to the user.
-                var imageGenerationProgress = new DialogWindow("DIN UNDERMEDVETNA BILDKOMPOSITION SKAPAS.\nVAR GOD VÄNTA.");
-                imageGenerationProgress.IsEnabledChanged += ((s, e) =>
-                   {
-                       composite.CreateCompositeImage(md);
-                       composite.SaveCompositeImage();
-                       imageGenerationProgress.Close();
-                   }
-                );
-                imageGenerationProgress.ShowDialog();
+                // Generate image composite.
+                new DialogWindow(
+                    "DIN UNDERMEDVETNA\nBILDKOMPOSITION SKAPAS.\nVAR GOD VÄNTA.",
+                    () =>
+                    {
+                        md = new MeasurementData(hits, images);
+                        composite.CreateCompositeImage(md);
+                        composite.SaveCompositeImage();
+                    }
+                ).ShowDialog();
+
+                // TODO Display print preview.
 
                 // Ask user if they want to print the composite image.
                 var printDialog = new DialogWindow("AVLÄSNINGEN KLAR.\nVILL DU SKRIVA UT DITT RESULTAT?", "JA", "NEJ");
                 printDialog.ShowDialog();
                 if (printDialog.DialogResult.Value)
                 {
-                    var printProgress = new DialogWindow("SKRIVER UT DIN UNDERMEDVETNA BILDKOMPOSITION.");
-                    printProgress.IsEnabledChanged += ((s, e) =>
-                    {
-                        composite.PrintCompositeImage();
-                        printProgress.Close();
-                    });
-                    printProgress.ShowDialog();
+                    new DialogWindow(
+                        "SKRIVER UT DIN UNDERMEDVETNA BILDKOMPOSITION.",
+                        () => composite.PrintCompositeImage()
+                    ).ShowDialog();
                 }
 
-                // Display statistics.
-                var statisticsWindow = new StatisticsWindow(md);
-                statisticsWindow.Show();
-
-                // Enable new session after some time has passed.
-                Task.Delay(15000).ContinueWith(_ => Dispatcher.Invoke(() =>
-                {
-                    statisticsWindow.Close();
-                    slideshow = Task.Factory.StartNew(runSlideshow);
-                }));
+                // Display statistics for a while.
+                new StatisticsWindow(md).ShowDialog();
             });
+
+            // Reset session.
+            slideshow = Task.Factory.StartNew(runSlideshow);
         }
 
         bool unique(Point point, List<Point> visited)
@@ -234,14 +234,6 @@ namespace SubconsciousDesignGenerator
                 Canvas.SetTop(e, p.Y);
 #endif
             }
-        }
-
-        void onNextSlide(object s, DataTransferEventArgs e)
-        {
-            //TODO Fix.
-            var sb = FindResource("BlinkAnimation") as Storyboard;
-            Storyboard.SetTarget(sb, this);
-            sb.Begin();
         }
     }
 }

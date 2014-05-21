@@ -13,37 +13,43 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Canvas Name="Points" Grid.ColumnSpan="2"/>
-        <Image Margin="40" Name="Image1" Height="Auto" Width="Auto" Grid.Column="0" SourceUpdated="onNextSlide">
+        <Image Margin="40" Name="Image1" Height="Auto" Width="Auto" Grid.Column="0">
+            <Image.Effect>
+                <BlurEffect x:Name="Image1Blur"/>
+            </Image.Effect>
             <Image.Triggers>
                 <EventTrigger RoutedEvent="Image.MouseEnter">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="Image2" Storyboard.TargetProperty="Opacity" From="1.0" To="0.9" Duration="0:0:0"/>
+                            <DoubleAnimation Storyboard.TargetName="Image1Blur" Storyboard.TargetProperty="Radius" To="0" Duration="0:0:0.8"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
-                <EventTrigger RoutedEvent="Image.MouseMove">
+                <EventTrigger RoutedEvent="Image.MouseLeave">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="Image1" Storyboard.TargetProperty="Opacity" From="0.9" To="1" Duration="0:0:0.01"/>
+                            <DoubleAnimation Storyboard.TargetName="Image1Blur" Storyboard.TargetProperty="Radius" From="0" To="3" Duration="0:0:0.4"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
             </Image.Triggers>
         </Image>
-        <Image Margin="40" Name="Image2" Height="Auto" Width="Auto" Grid.Column="1" SourceUpdated="onNextSlide">
+        <Image Margin="40" Name="Image2" Height="Auto" Width="Auto" Grid.Column="1">
+            <Image.Effect>
+                <BlurEffect x:Name="Image2Blur"/>
+            </Image.Effect>
             <Image.Triggers>
-                <EventTrigger RoutedEvent="Image.MouseMove">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="Image2" Storyboard.TargetProperty="Opacity" From="0.9" To="1" Duration="0:0:0.01"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
                 <EventTrigger RoutedEvent="Image.MouseEnter">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="Image1" Storyboard.TargetProperty="Opacity" From="1.0" To="0.9" Duration="0:0:0"/>
+                            <DoubleAnimation Storyboard.TargetName="Image2Blur" Storyboard.TargetProperty="Radius" To="0" Duration="0:0:0.8"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="Image.MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="Image2Blur" Storyboard.TargetProperty="Radius" From="0" To="3" Duration="0:0:0.4"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>

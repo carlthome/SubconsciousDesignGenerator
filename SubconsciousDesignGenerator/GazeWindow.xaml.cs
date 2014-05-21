@@ -26,19 +26,9 @@ namespace SubconsciousDesignGenerator
             Instructions.Text = instructions;
         }
 
-        void onContentRendered(object s, EventArgs e)
+        void onFadedOut(object s, EventArgs e)
         {
-            App.eyeTracker.HeadMovement += onHeadMoved;
-        }
-
-        void onClosing(object s, CancelEventArgs e)
-        {
-            App.eyeTracker.HeadMovement -= onHeadMoved;
-        }
-
-        void onHeadMoved(object s, HeadMovementEventArgs e)
-        {
-            if (e.Distance != -1) Dispatcher.Invoke(new Action(() => DialogResult = true)); //TODO Fade out.
+            Close();
         }
     }
 }
