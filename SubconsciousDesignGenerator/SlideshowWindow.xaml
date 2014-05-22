@@ -13,43 +13,45 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Canvas Name="Points" Grid.ColumnSpan="2"/>
-        <Image Margin="40" Name="Image1" Height="Auto" Width="Auto" Grid.Column="0">
+        <Image Margin="40" Name="Image1" Height="Auto" Width="Auto" Grid.Column="0" RenderOptions.BitmapScalingMode="Fant" RenderOptions.EdgeMode="Aliased">
             <Image.Effect>
-                <BlurEffect x:Name="Image1Blur"/>
+                <BlurEffect x:Name="Image1Blur" Radius="3" RenderingBias="Quality" KernelType="Box"/>
             </Image.Effect>
             <Image.Triggers>
                 <EventTrigger RoutedEvent="Image.MouseEnter">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="Image1Blur" Storyboard.TargetProperty="Radius" To="0" Duration="0:0:0.8"/>
+                            <DoubleAnimation Storyboard.TargetName="Image1" Storyboard.TargetProperty="Opacity" From="1" To="0.9" Duration="0:0:0.01" AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="Image1Blur" Storyboard.TargetProperty="Radius" To="0" Duration="0:0:0.4"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
                 <EventTrigger RoutedEvent="Image.MouseLeave">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="Image1Blur" Storyboard.TargetProperty="Radius" From="0" To="3" Duration="0:0:0.4"/>
+                            <DoubleAnimation Storyboard.TargetName="Image1Blur" Storyboard.TargetProperty="Radius" From="0" To="3" Duration="0:0:0.1"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
             </Image.Triggers>
         </Image>
-        <Image Margin="40" Name="Image2" Height="Auto" Width="Auto" Grid.Column="1">
+        <Image Margin="40" Name="Image2" Height="Auto" Width="Auto" Grid.Column="1" RenderOptions.BitmapScalingMode="Fant" RenderOptions.EdgeMode="Aliased">
             <Image.Effect>
-                <BlurEffect x:Name="Image2Blur"/>
+                <BlurEffect x:Name="Image2Blur" RenderingBias="Quality" Radius="3" KernelType="Box"/>
             </Image.Effect>
             <Image.Triggers>
                 <EventTrigger RoutedEvent="Image.MouseEnter">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="Image2Blur" Storyboard.TargetProperty="Radius" To="0" Duration="0:0:0.8"/>
+                            <DoubleAnimation Storyboard.TargetName="Image2" Storyboard.TargetProperty="Opacity" From="1" To="0.9" Duration="0:0:0.01" AutoReverse="True" />
+                            <DoubleAnimation Storyboard.TargetName="Image2Blur" Storyboard.TargetProperty="Radius" To="0" Duration="0:0:0.4"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
                 <EventTrigger RoutedEvent="Image.MouseLeave">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="Image2Blur" Storyboard.TargetProperty="Radius" From="0" To="3" Duration="0:0:0.4"/>
+                            <DoubleAnimation Storyboard.TargetName="Image2Blur" Storyboard.TargetProperty="Radius" From="0" To="3" Duration="0:0:0.1"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>

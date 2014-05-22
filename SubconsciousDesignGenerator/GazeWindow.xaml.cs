@@ -20,13 +20,32 @@ namespace SubconsciousDesignGenerator
     /// </summary>
     public partial class GazeWindow : Window
     {
-        public GazeWindow(string instructions)
+        public GazeWindow(string instructions, Action a)
         {
             InitializeComponent();
             Instructions.Text = instructions;
+            FadeIn.Completed += (s, e) => { a(); Close(); };
         }
 
-        void onFadedOut(object s, EventArgs e)
+        public GazeWindow(string instructions, bool confirm, bool cancel)
+        {
+            InitializeComponent();
+            Instructions.Text = instructions;
+            if (confirm) Confirm.Visibility = Visibility.Visible;
+            if (cancel) Cancel.Visibility = Visibility.Visible;
+        }
+
+        void onConfirm(object s, EventArgs e)
+        {
+            DialogResult = true;
+        }
+
+        void onCancel(object s, EventArgs e)
+        {
+            DialogResult = false;
+        }
+
+        void onClose(object s, EventArgs e)
         {
             Close();
         }

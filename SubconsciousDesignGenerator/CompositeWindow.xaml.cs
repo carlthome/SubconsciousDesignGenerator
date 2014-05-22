@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Printing;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 
 namespace SubconsciousDesignGenerator
 {
@@ -15,26 +16,28 @@ namespace SubconsciousDesignGenerator
     /// </summary>
     public partial class CompositeWindow : Window
     {
-        Random r;
-        string filePath;
-
+        RenderTargetBitmap r;
         public CompositeWindow()
         {
             InitializeComponent();
-            r = new Random();
         }
 
         public void CreateCompositeImage(MeasurementData md)
         {
             DataContext = md;
+            Random r = new Random();
 
-            // If the user looked at a few images a lot more than the others, keep only those few images. Also, skip images that got less than the median amount of hits.
+            // Remove the images the user wasn't interested in.
             var layers = md.HitCounts
                 .Take((int)Math.Round(md.HitCounts.Count * (1 - md.EuclideanNorm)))
                 .Where(l => l.HitCount > md.MedianHitCount)
+                .Where(l => l.HitCount > md.AverageHitCount)
                 .ToList();
 
-            // Go through all image layers and scale, position and rotate them on the layout canvas.
+            // Make sure most popular images are on top.
+            layers.Reverse();
+
+            // Go through all images and scale, position and rotate them on a canvas.
             var z = 1;
             foreach (var hc in layers)
             {
@@ -42,32 +45,34 @@ namespace SubconsciousDesignGenerator
                 var i = new Image();
                 RenderOptions.SetBitmapScalingMode(i, BitmapScalingMode.Fant);
 
-                // Scale image.
-                i.Height = i.Width = md.EuclideanNorm * layers.Count * CompositeImage.Height / z;
+                // Get image source.
+                i.Source = hc.FullSizeImage;
 
-                // Load image file.
-                using (FileStream fs = new FileStream(hc.ImagePath, FileMode.Open, FileAccess.Read))
+                // Scale image.
+                i.Height = i.Width = md.EuclideanNorm * layers.Count * Layout.Height / z;
+
+                // Soften enlarged images.
+                if (i.Height > hc.FullSizeImage.Height)
                 {
-                    BitmapImage bi = new BitmapImage();
-                    bi.BeginInit();
-                    bi.CacheOption = BitmapCacheOption.None;
-                    //bi.DecodePixelHeight = ((int)i.Height < bi.PixelHeight) ? (int)i.Height : bi.PixelHeight;
-                    bi.StreamSource = fs;
-                    bi.EndInit();
-                    i.Source = bi;
-                };
+                    var be = new BlurEffect();
+                    be.RenderingBias = RenderingBias.Quality;
+                    be.KernelType = KernelType.Box;
+                    be.Radius = 1 + (int)i.Height / hc.FullSizeImage.Height;
+                    i.Effect = be;
+                }
 
                 // Set depth ordering.
                 Canvas.SetZIndex(i, ++z);
 
                 // Position image on the canvas.
                 Func<double, double> random = (double x) => r.NextDouble() * 2 * x - x; // Random number between -x and x.
-                Canvas.SetLeft(i, (CompositeImage.Width - i.Width) / 2 + random((1 - md.EuclideanNorm) * CompositeImage.Width));
-                Canvas.SetTop(i, (CompositeImage.Height - i.Height) / 2 + random((1 - md.EuclideanNorm) * CompositeImage.Height));
+                Canvas.SetLeft(i, (Layout.Width - i.Width) / 2 + random((1 - md.EuclideanNorm) * Layout.Width));
+                Canvas.SetTop(i, (Layout.Height - i.Height) / 2 + random((1 - md.EuclideanNorm) * Layout.Height));
 
                 // Rotate image randomly.
-                i.RenderTransform = new RotateTransform(r.Next(360));
+                i.RenderTransform = new RotateTransform(r.Next(360), i.Width / 2, i.Height / 2);
 
+                // Add image to canvas.
                 Layout.Children.Add(i);
             }
         }
@@ -75,43 +80,48 @@ namespace SubconsciousDesignGenerator
         public void SaveCompositeImage()
         {
             if (!Directory.Exists("Output")) Directory.CreateDirectory("Output");
-            filePath = "Output/" + System.DateTime.Now.ToString("yyyyMMddHHmmss") + ".tiff";
+            string filePath = "Output/" + System.DateTime.Now.ToString("yyyyMMddHHmmss") + ".tiff";
 
             Size size = new Size(CompositeImage.Width, CompositeImage.Height);
             CompositeImage.UpdateLayout();
             CompositeImage.Arrange(new Rect(size));
 
-            RenderTargetBitmap r = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
+            r = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
             r.Render(CompositeImage);
 
             using (FileStream fs = File.Create(filePath))
             {
                 TiffBitmapEncoder encoder = new TiffBitmapEncoder();
-                encoder.Compression = TiffCompressOption.Lzw;
                 encoder.Frames.Add(BitmapFrame.Create(r));
                 encoder.Save(fs);
             }
+
         }
 
         public void PrintCompositeImage()
         {
-            if (!File.Exists(filePath)) SaveCompositeImage();
-
-            var bi = new BitmapImage();
-            bi.BeginInit();
-            bi.CacheOption = BitmapCacheOption.OnLoad;
-            bi.UriSource = new Uri(filePath);
-            bi.EndInit();
-
-            var dv = new DrawingVisual();
-            var dc = dv.RenderOpen();
-            dc.DrawImage(bi, new Rect { Width = bi.Width, Height = bi.Height });
-            dc.Close();
-
             var pd = new PrintDialog();
             pd.PrintQueue = LocalPrintServer.GetDefaultPrintQueue();
-            pd.PrintVisual(dv, "");
-            //pd.PrintVisual(CompositeImage, ""); TODO Too slow?
+            var pc = pd.PrintQueue.GetPrintCapabilities(pd.PrintTicket);
+            double scale = Math.Min(pc.PageImageableArea.ExtentWidth / CompositeImage.Width, pc.PageImageableArea.ExtentHeight / CompositeImage.Height);
+            var s = new Size(pc.PageImageableArea.ExtentWidth, pc.PageImageableArea.ExtentHeight);
+            var o = new Point(pc.PageImageableArea.OriginWidth, pc.PageImageableArea.OriginHeight);
+
+            var c = new Canvas();
+            var i = new Image();
+            i.Source = r;
+            c.Children.Add(i);
+            c.LayoutTransform = new ScaleTransform(scale, scale);
+            c.Measure(s);
+            c.Arrange(new Rect(o, s));
+            pd.PrintVisual(c, "");
+
+            /* TODO Works if blureffect is disabled.
+            CompositeImage.LayoutTransform = new ScaleTransform(scale, scale);
+            CompositeImage.Measure(s);
+            CompositeImage.Arrange(new Rect(o, s));
+            pd.PrintVisual(CompositeImage, "");
+            */
         }
 
         void onLoaded(object s, EventArgs e)
