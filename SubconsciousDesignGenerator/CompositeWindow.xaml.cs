@@ -16,7 +16,7 @@ namespace SubconsciousDesignGenerator
     /// </summary>
     public partial class CompositeWindow : Window
     {
-        RenderTargetBitmap r;
+        RenderTargetBitmap r; // TODO Remember the law of Demeter.
         public CompositeWindow()
         {
             InitializeComponent();
@@ -25,7 +25,8 @@ namespace SubconsciousDesignGenerator
         public void CreateCompositeImage(MeasurementData md)
         {
             DataContext = md;
-            Random r = new Random();
+            Layout.Children.Clear();
+            Random rng = new Random();
 
             // Remove the images the user wasn't interested in.
             var layers = md.HitCounts
@@ -45,11 +46,12 @@ namespace SubconsciousDesignGenerator
                 var i = new Image();
                 RenderOptions.SetBitmapScalingMode(i, BitmapScalingMode.Fant);
 
+                // Scale image.
+                i.Height = md.EuclideanNorm * layers.Count * Layout.Height / z;
+                i.Width = i.Height * (hc.FullSizeImage.PixelHeight / hc.FullSizeImage.PixelWidth);
+
                 // Get image source.
                 i.Source = hc.FullSizeImage;
-
-                // Scale image.
-                i.Height = i.Width = md.EuclideanNorm * layers.Count * Layout.Height / z;
 
                 // Soften enlarged images.
                 if (i.Height > hc.FullSizeImage.Height)
@@ -65,37 +67,42 @@ namespace SubconsciousDesignGenerator
                 Canvas.SetZIndex(i, ++z);
 
                 // Position image on the canvas.
-                Func<double, double> random = (double x) => r.NextDouble() * 2 * x - x; // Random number between -x and x.
-                Canvas.SetLeft(i, (Layout.Width - i.Width) / 2 + random((1 - md.EuclideanNorm) * Layout.Width));
-                Canvas.SetTop(i, (Layout.Height - i.Height) / 2 + random((1 - md.EuclideanNorm) * Layout.Height));
+                Func<double, double> random = (double x) => rng.NextDouble() * 2 * x - x; // Random number between -x and x.
+                var compactness = 0.5;
+                Canvas.SetLeft(i, (Layout.Width - i.Width) / 2 + random(compactness * (1 - md.EuclideanNorm) * Layout.Width));
+                Canvas.SetTop(i, (Layout.Height - i.Height) / 2 + random(compactness * (1 - md.EuclideanNorm) * Layout.Height));
 
                 // Rotate image randomly.
-                i.RenderTransform = new RotateTransform(r.Next(360), i.Width / 2, i.Height / 2);
+                i.RenderTransform = new RotateTransform(rng.Next(360), i.Width / 2, i.Height / 2);
 
                 // Add image to canvas.
                 Layout.Children.Add(i);
             }
+
+            // Rasterize.
+            Size size = new Size(CompositeImage.Width, CompositeImage.Height);
+            CompositeImage.UpdateLayout();
+            CompositeImage.Arrange(new Rect(size));
+            r = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
+            r.Render(CompositeImage);
+
+            // Exchange images for rasterized result.
+            Layout.Children.Clear();
+            var img = new Image();
+            img.Source = r;
+            Layout.Children.Add(img);
         }
 
         public void SaveCompositeImage()
         {
             if (!Directory.Exists("Output")) Directory.CreateDirectory("Output");
             string filePath = "Output/" + System.DateTime.Now.ToString("yyyyMMddHHmmss") + ".tiff";
-
-            Size size = new Size(CompositeImage.Width, CompositeImage.Height);
-            CompositeImage.UpdateLayout();
-            CompositeImage.Arrange(new Rect(size));
-
-            r = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
-            r.Render(CompositeImage);
-
             using (FileStream fs = File.Create(filePath))
             {
                 TiffBitmapEncoder encoder = new TiffBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(r));
                 encoder.Save(fs);
             }
-
         }
 
         public void PrintCompositeImage()
@@ -115,23 +122,11 @@ namespace SubconsciousDesignGenerator
             c.Measure(s);
             c.Arrange(new Rect(o, s));
             pd.PrintVisual(c, "");
-
-            /* TODO Works if blureffect is disabled.
-            CompositeImage.LayoutTransform = new ScaleTransform(scale, scale);
-            CompositeImage.Measure(s);
-            CompositeImage.Arrange(new Rect(o, s));
-            pd.PrintVisual(CompositeImage, "");
-            */
         }
 
         void onLoaded(object s, EventArgs e)
         {
             WindowState = WindowState.Maximized;
-        }
-
-        void onDataContextChanged(object s, DependencyPropertyChangedEventArgs e)
-        {
-            Layout.Children.Clear();
         }
     }
 }

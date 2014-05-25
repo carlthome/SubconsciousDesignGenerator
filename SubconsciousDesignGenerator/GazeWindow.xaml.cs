@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,19 +21,20 @@ namespace SubconsciousDesignGenerator
     /// </summary>
     public partial class GazeWindow : Window
     {
-        public GazeWindow(string instructions, Action a)
-        {
-            InitializeComponent();
-            Instructions.Text = instructions;
-            FadeIn.Completed += (s, e) => { a(); Close(); };
-        }
+        [DllImport("User32.dll")]
+        private static extern bool SetCursorPos(int x, int y);
 
-        public GazeWindow(string instructions, bool confirm, bool cancel)
+        public GazeWindow(string instructions, Action a = null)
         {
             InitializeComponent();
             Instructions.Text = instructions;
-            if (confirm) Confirm.Visibility = Visibility.Visible;
-            if (cancel) Cancel.Visibility = Visibility.Visible;
+            SetCursorPos(-1, -1);
+
+            if (a != null)
+            {
+                Buttons.Visibility = Visibility.Collapsed;
+                FadeIn.Completed += (s, e) => { a(); Close(); };
+            }
         }
 
         void onConfirm(object s, EventArgs e)

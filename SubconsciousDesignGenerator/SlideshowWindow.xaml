@@ -6,14 +6,15 @@
         Loaded="onLoaded"
         WindowState="Maximized"
         WindowStyle="None"
+        ContentRendered="onContentRendered"
         ResizeMode="NoResize">
-    <Grid Margin="20" Name="Slide">
+    <Grid Name="Slide">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Canvas Name="Points" Grid.ColumnSpan="2"/>
-        <Image Margin="40" Name="Image1" Height="Auto" Width="Auto" Grid.Column="0" RenderOptions.BitmapScalingMode="Fant" RenderOptions.EdgeMode="Aliased">
+        <Image Name="Image1" Grid.Column="0" RenderOptions.BitmapScalingMode="LowQuality" StretchDirection="DownOnly">
             <Image.Effect>
                 <BlurEffect x:Name="Image1Blur" Radius="3" RenderingBias="Quality" KernelType="Box"/>
             </Image.Effect>
@@ -35,7 +36,7 @@
                 </EventTrigger>
             </Image.Triggers>
         </Image>
-        <Image Margin="40" Name="Image2" Height="Auto" Width="Auto" Grid.Column="1" RenderOptions.BitmapScalingMode="Fant" RenderOptions.EdgeMode="Aliased">
+        <Image Name="Image2" Grid.Column="1" RenderOptions.BitmapScalingMode="LowQuality" StretchDirection="DownOnly">
             <Image.Effect>
                 <BlurEffect x:Name="Image2Blur" RenderingBias="Quality" Radius="3" KernelType="Box"/>
             </Image.Effect>

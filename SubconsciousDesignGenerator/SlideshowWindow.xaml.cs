@@ -25,11 +25,8 @@ namespace SubconsciousDesignGenerator
         Task slideshow;
         CompositeWindow compositeWindow;
         Dictionary<string, BitmapImage> images, slides, thumbs;
-#if DEBUG
-        const int SLIDE_DURATION = 100;
-#else
         const int SLIDE_DURATION = 800;
-#endif
+
         public SlideshowWindow()
         {
             InitializeComponent();
@@ -37,12 +34,7 @@ namespace SubconsciousDesignGenerator
 
         void onLoaded(object s, RoutedEventArgs e)
         {
-            if (!App.eyeTracker.connected)
-            {
-                Close();
-                MessageBox.Show("Kameran fungerar inte.");
-                return;
-            }
+            if (!App.eyeTracker.connected) MessageBox.Show("Kameran fungerar inte. Använder datormusen istället.");
 
             compositeWindow = new CompositeWindow();
             if (System.Windows.Forms.SystemInformation.MonitorCount > 1)
@@ -54,7 +46,6 @@ namespace SubconsciousDesignGenerator
                 compositeWindow.Topmost = true;
                 compositeWindow.Show();
             }
-#if DEBUG
             else
             {
                 compositeWindow.Show();
@@ -65,7 +56,10 @@ namespace SubconsciousDesignGenerator
                 Width = compositeWindow.Width = compositeWindow.Left = wa.Width / 2;
                 Height = compositeWindow.Height = wa.Height;
             }
-#endif
+        }
+
+        void onContentRendered(object s, EventArgs e)
+        {
             // Load images.
             new GazeWindow(
                 "SKALAR BILDER.\nVAR GOD VÄNTA.",
@@ -74,30 +68,14 @@ namespace SubconsciousDesignGenerator
                     images = new Dictionary<string, BitmapImage>();
                     slides = new Dictionary<string, BitmapImage>();
                     thumbs = new Dictionary<string, BitmapImage>();
-#if DEBUG
-                    var i = 0;
-#endif
-                    foreach (var imagePath in Directory.GetFiles("Input", "*.png").ToList())
+                    string[] searchPatterns = { "*.png", "*.jpg" };
+                    foreach (var imagePath in searchPatterns.SelectMany(filter => Directory.GetFiles("Input", filter)).ToArray())
                     {
-#if DEBUG
-                        if (i++ > 3) break;
-#endif
-                        using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
-                        {
-                            BitmapImage image = new BitmapImage();
-                            image.BeginInit();
-                            image.CacheOption = BitmapCacheOption.OnLoad;
-                            image.StreamSource = fs;
-                            image.EndInit();
-                            image.Freeze();
-                            images.Add(imagePath, image);
-                        }
-
                         using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
                         {
                             BitmapImage slide = new BitmapImage();
                             slide.BeginInit();
-                            slide.DecodePixelHeight = (int)Height;
+                            slide.DecodePixelWidth = (int)Width / 4;
                             slide.CacheOption = BitmapCacheOption.OnLoad;
                             slide.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
                             slide.StreamSource = fs;
@@ -117,6 +95,17 @@ namespace SubconsciousDesignGenerator
                             thumb.Freeze();
                             thumbs.Add(imagePath, thumb);
                         }
+
+                        using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                        {
+                            var image = new BitmapImage();
+                            image.BeginInit();
+                            image.CacheOption = BitmapCacheOption.OnLoad;
+                            image.StreamSource = fs;
+                            image.EndInit();
+                            image.Freeze();
+                            images.Add(imagePath, image);
+                        }
                     }
                 }
             ).ShowDialog();
@@ -128,8 +117,8 @@ namespace SubconsciousDesignGenerator
         {
             Dispatcher.Invoke(() =>
             {
-                // Ask user if they want to begin.
-                (new GazeWindow("STARTA BILDSPEL\n& AVLÄSNING?", true, false)).ShowDialog();
+                if (!(new GazeWindow("STARTA BILDSPEL\n& AVLÄSNING?")).ShowDialog().Value)
+                    while (!(new GazeWindow("GRATTIS PÅ MORS DAG!\nSTARTA?")).ShowDialog().Value) ;
 
                 Slide.Visibility = Visibility.Visible;
             });
@@ -152,14 +141,14 @@ namespace SubconsciousDesignGenerator
                 hc2 = 0;
                 string i1 = q.Dequeue();
                 string i2 = q.Dequeue();
-                Dispatcher.Invoke(() =>
+                Dispatcher.BeginInvoke(new Action(() =>
                 {
 #if DEBUG
                     Points.Children.Clear();
 #endif
                     Image1.SetValue(Image.SourceProperty, slides[i1]);
                     Image2.SetValue(Image.SourceProperty, slides[i2]);
-                });
+                })).Wait();
 
                 // Measure hits for a while.
                 slideshow.Wait(SLIDE_DURATION);
@@ -185,9 +174,7 @@ namespace SubconsciousDesignGenerator
                 ).ShowDialog();
 
                 // Ask user if they want to print the composite image.
-                var printDialog = new GazeWindow("VILL DU SKRIVA UT DITT RESULTAT?", true, true);
-                printDialog.ShowDialog();
-                if (printDialog.DialogResult.Value)
+                if (new GazeWindow("VILL DU SKRIVA UT DITT RESULTAT?").ShowDialog().Value)
                 {
                     new GazeWindow(
                         "SKRIVER UT DIN UNDERMEDVETNA BILDKOMPOSITION.",

@@ -7,13 +7,13 @@
         Topmost="True" 
         Cursor="None">
     <Window.Effect>
-        <BlurEffect x:Name="Blur"/>
+        <BlurEffect x:Name="Blur" Radius="25"/>
     </Window.Effect>
     <Window.Triggers>
         <EventTrigger RoutedEvent="Window.Loaded">
             <BeginStoryboard>
                 <Storyboard>
-                    <DoubleAnimation Storyboard.TargetName="Blur" Storyboard.TargetProperty="Radius" From="100" To="0" Duration="0:0:1">
+                    <DoubleAnimation Storyboard.TargetName="Blur" Storyboard.TargetProperty="Radius" To="0" Duration="0:0:1">
                         <DoubleAnimation.EasingFunction>
                             <ExponentialEase/>
                         </DoubleAnimation.EasingFunction>
@@ -24,7 +24,7 @@
         <EventTrigger RoutedEvent="Window.MouseEnter">
             <BeginStoryboard Name="FadeOut">
                 <Storyboard>
-                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" BeginTime="0" Duration="0:0:10" Completed="onFadedOut">
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" BeginTime="0" Duration="0:0:3" Completed="onFadedOut">
                         <DoubleAnimation.EasingFunction>
                             <ExponentialEase EasingMode="EaseIn"/>
                         </DoubleAnimation.EasingFunction>

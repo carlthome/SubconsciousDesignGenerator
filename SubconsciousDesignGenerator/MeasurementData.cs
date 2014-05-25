@@ -12,9 +12,8 @@ namespace SubconsciousDesignGenerator
     {
         public class Measurement
         {
-            public string ImagePath { get; set; } //TODO Remove?
-            public ImageSource FullSizeImage { get; set; }
-            public ImageSource ThumbnailImage { get; set; }
+            public BitmapImage FullSizeImage { get; set; }
+            public BitmapImage ThumbnailImage { get; set; }
             public int HitCount { get; set; }
             public double HitCountNormalized { get; set; }
         }
@@ -37,7 +36,6 @@ namespace SubconsciousDesignGenerator
             HitCounts = new List<Measurement>();
             kvps.ForEach(kvp => HitCounts.Add(new Measurement
             {
-                ImagePath = kvp.Key,
                 FullSizeImage = images[kvp.Key],
                 ThumbnailImage = thumbs[kvp.Key],
                 HitCount = kvp.Value,

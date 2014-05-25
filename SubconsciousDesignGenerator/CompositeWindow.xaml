@@ -8,12 +8,11 @@
         ResizeMode="NoResize"
         VerticalContentAlignment="Stretch"
         HorizontalContentAlignment="Center"
-        DataContextChanged="onDataContextChanged"
         Background="Black">
     <Viewbox>
         <Grid Name="CompositeImage" Width="4961" Height="7016" Background="White">
             <Canvas Name="Layout" Width="4961" Height="7016" ClipToBounds="True"/>
-            <Border VerticalAlignment="Bottom" Background="White" Padding="20">
+            <Border VerticalAlignment="Bottom" Background="White" Padding="60,20,80,60">
                 <ItemsControl ItemsSource="{Binding HitCounts}">
                     <ItemsControl.Template>
                         <ControlTemplate>
