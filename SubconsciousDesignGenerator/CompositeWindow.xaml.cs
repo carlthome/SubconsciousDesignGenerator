@@ -68,7 +68,7 @@ namespace SubconsciousDesignGenerator
 
                 // Position image on the canvas.
                 Func<double, double> random = (double x) => rng.NextDouble() * 2 * x - x; // Random number between -x and x.
-                var compactness = 0.5;
+                var compactness = 0.9;
                 Canvas.SetLeft(i, (Layout.Width - i.Width) / 2 + random(compactness * (1 - md.EuclideanNorm) * Layout.Width));
                 Canvas.SetTop(i, (Layout.Height - i.Height) / 2 + random(compactness * (1 - md.EuclideanNorm) * Layout.Height));
 
@@ -85,12 +85,6 @@ namespace SubconsciousDesignGenerator
             CompositeImage.Arrange(new Rect(size));
             r = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96, 96, PixelFormats.Pbgra32);
             r.Render(CompositeImage);
-
-            // Exchange images for rasterized result.
-            Layout.Children.Clear();
-            var img = new Image();
-            img.Source = r;
-            Layout.Children.Add(img);
         }
 
         public void SaveCompositeImage()

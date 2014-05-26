@@ -96,16 +96,14 @@ namespace SubconsciousDesignGenerator
                             thumbs.Add(imagePath, thumb);
                         }
 
-                        using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
-                        {
-                            var image = new BitmapImage();
-                            image.BeginInit();
-                            image.CacheOption = BitmapCacheOption.OnLoad;
-                            image.StreamSource = fs;
-                            image.EndInit();
-                            image.Freeze();
-                            images.Add(imagePath, image);
-                        }
+                        FileStream stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+                        var image = new BitmapImage();
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.None;
+                        image.StreamSource = stream;
+                        image.EndInit();
+                        image.Freeze();
+                        images.Add(imagePath, image);
                     }
                 }
             ).ShowDialog();
